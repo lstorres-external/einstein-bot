@@ -1,11 +1,69 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sofia v2 UAT</title>
-</head>
-<body>
-    <h1> Sofia v2 - UAT</h1>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script type="text/javascript">
+      function initEmbeddedMessaging() {
+        try {
+          var language = "en-US";
+          embeddedservice_bootstrap.settings.language = language;
+          window.addEventListener("onEmbeddedMessagingReady", (e) => {
+            embeddedservice_bootstrap.prechatAPI.setVisiblePrechatFields({
+              // List the pre-chat field names with the value and whether
+              // it's editable in the pre-chat form.
+              FirstName: {
+                value: "Test",
+                isEditableByEndUser: false,
+              },
+              LastName: {
+                value: "Test",
+                isEditableByEndUser: false,
+              },
+              Email: {
+                value: "test@test.com",
+                isEditableByEndUser: false,
+              },
+              Language: {
+                value: language,
+                isEditableByEndUser: false,
+              },
+              Customer_Identifier: {
+                value: "CustomerID",
+                isEditableByEndUser: false,
+              },
+              Source: {
+                value: "Source",
+                isEditableByEndUser: false,
+              },
+              Country: {
+                value: Country,
+                isEditableByEndUser: false,
+              },
+            });
+          });
+
+          embeddedservice_bootstrap.init(
+            "00D1x0000000MUW",
+            "sofiav2",
+            "https://visa-gateway--vgint.sandbox.my.site.com/ESWsofiav21731496032237",
+            {
+              scrt2URL:
+                "https://visa-gateway--vgint.sandbox.my.salesforce-scrt.com",
+            }
+          );
+        } catch (err) {
+          console.error("Error loading Embedded Messaging: ", err);
+        }
+      }
+    </script>
+    <script
+      type="text/javascript"
+      src="https://visa-gateway--vgint.sandbox.my.site.com/ESWsofiav21731496032237/assets/js/bootstrap.min.js"
+      onload="initEmbeddedMessaging()"
+    ></script>
+  </body>
 </html>
