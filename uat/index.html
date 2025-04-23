@@ -3,18 +3,21 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
-  </head>
-  <body>
+    <title>Embedded Messaging</title>
     <script type="text/javascript">
+      function getLanguageFromQueryString() {
+        const urlParams = new URLSearchParams(window.location.search);
+        return urlParams.get('language') || 'en-US'; 
+      }
+
       function initEmbeddedMessaging() {
         try {
-          var language = "en-US";
+          var language = getLanguageFromQueryString();
           embeddedservice_bootstrap.settings.language = language;
+          document.getElementById("languageInfo").innerHTML = `O idioma foi ajustado para: ${language}`;
+
           window.addEventListener("onEmbeddedMessagingReady", (e) => {
             embeddedservice_bootstrap.prechatAPI.setVisiblePrechatFields({
-              // List the pre-chat field names with the value and whether
-              // it's editable in the pre-chat form.
               FirstName: {
                 value: "Test",
                 isEditableByEndUser: false,
@@ -40,7 +43,7 @@
                 isEditableByEndUser: false,
               },
               Country: {
-                value: Country,
+                value: "Country",
                 isEditableByEndUser: false,
               },
             });
@@ -60,6 +63,12 @@
         }
       }
     </script>
+  </head>
+  <body>
+    <div style="text-align: center; margin-top: 20px;">
+     <p id="languageInfo"></p>
+    </div>
+
     <script
       type="text/javascript"
       src="https://visa-gateway--vgint.sandbox.my.site.com/ESWsofiav21731496032237/assets/js/bootstrap.min.js"
