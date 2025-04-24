@@ -1,11 +1,84 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sofia v2 PROD</title>
-</head>
-<body>
-    <h1> Sofia v2 - PROD</h1>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sofia V2 - PROD</title>
+    <script type="text/javascript">
+      function getLanguageFromQueryString() {
+        const urlParams = new URLSearchParams(window.location.search);
+        return urlParams.get('language') || 'en-US'; 
+      }
+
+      function initEmbeddedMessaging() {
+        try {
+          var language = getLanguageFromQueryString();
+          embeddedservice_bootstrap.settings.language = language;
+          document.getElementById("languageInfo").innerHTML = `O idioma foi ajustado para: ${language}`;
+
+          window.addEventListener("onEmbeddedMessagingReady", (e) => {
+            embeddedservice_bootstrap.prechatAPI.setVisiblePrechatFields({
+              FirstName: {
+                value: "Test",
+                isEditableByEndUser: false,
+              },
+              LastName: {
+                value: "Test",
+                isEditableByEndUser: false,
+              },
+              Email: {
+                value: "test@test.com",
+                isEditableByEndUser: false,
+              },
+              Language: {
+                value: language,
+                isEditableByEndUser: false,
+              },
+              Customer_Identifier: {
+                value: "CustomerID",
+                isEditableByEndUser: false,
+              },
+              Source: {
+                value: "Source",
+                isEditableByEndUser: false,
+              },
+              Country: {
+                value: "Country",
+                isEditableByEndUser: false,
+              },
+            });
+          });
+
+          embeddedservice_bootstrap.init(
+            "00D1x0000000MUW",
+            "sofiav2",
+            "https://visa-gateway--vgint.sandbox.my.site.com/ESWsofiav21731496032237",
+            {
+              scrt2URL:
+                "https://visa-gateway--vgint.sandbox.my.salesforce-scrt.com",
+            }
+          );
+        } catch (err) {
+          console.error("Error loading Embedded Messaging: ", err);
+        }
+      }
+    </script>
+  </head>
+  <body>
+
+    <div style="display: flex;">
+      <button onclick="window.location.href = 'https://lstorres-external.github.io/einstein-bot/prod/?language=en_US';">English (US)</button>
+      <button onclick="window.location.href = 'https://lstorres-external.github.io/einstein-bot/prod/?language=pt_BR';">Português (BR)</button>
+      <button onclick="window.location.href = 'https://lstorres-external.github.io/einstein-bot/prod/?language=es';">Español (ES)</button>
+    </div>
+    <div style="text-align: center; margin-top: 20px;">
+     <p id="languageInfo"></p>
+    </div>
+
+    <script
+      type="text/javascript"
+      src="https://visa-gateway--vgint.sandbox.my.site.com/ESWsofiav21731496032237/assets/js/bootstrap.min.js"
+      onload="initEmbeddedMessaging()"
+    ></script>
+  </body>
 </html>
