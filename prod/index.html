@@ -50,18 +50,16 @@
           });
 
           embeddedservice_bootstrap.init(
-            "00D1x0000000MUW",
-            "sofiav2",
-            "https://visa-gateway--vgint.sandbox.my.site.com/ESWsofiav21731496032237",
-            {
-              scrt2URL:
-                "https://visa-gateway--vgint.sandbox.my.salesforce-scrt.com",
-            }
-          );
-        } catch (err) {
-          console.error("Error loading Embedded Messaging: ", err);
-        }
-      }
+				'00Db0000000d9Sx',
+				'Sofia_Portal',
+				'https://visa-gateway.my.site.com/ESWSofia1746619645236',
+				{
+					scrt2URL: 'https://visa-gateway.my.salesforce-scrt.com'
+				}
+			);
+		} catch (err) {
+			console.error('Error loading Embedded Messaging: ', err);
+		}
     </script>
   </head>
   <body>
@@ -77,7 +75,7 @@
 
     <script
       type="text/javascript"
-      src="https://visa-gateway--vgint.sandbox.my.site.com/ESWsofiav21731496032237/assets/js/bootstrap.min.js"
+      src="https://visa-gateway.my.site.com/ESWSofia1746619645236/assets/js/bootstrap.min.js"
       onload="initEmbeddedMessaging()"
     ></script>
   </body>
