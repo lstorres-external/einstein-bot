@@ -15,10 +15,16 @@
           var language = getLanguageFromQueryString();
 
           alert('language=== ' + language);
+
+          window.embeddedservice_bootstrap = window.embeddedservice_bootstrap || {};
+          embeddedservice_bootstrap.settings = embeddedservice_bootstrap.settings || {};
           embeddedservice_bootstrap.settings.language = language;
+          
           alert(embeddedservice_bootstrap.settings.language);
+          
           document.getElementById("languageInfo").innerHTML = `O idioma foi ajustado para: ${language}`;
           alert(document.getElementById("languageInfo").innerHTML);
+          
           window.addEventListener("onEmbeddedMessagingReady", (e) => {
             embeddedservice_bootstrap.prechatAPI.setVisiblePrechatFields({
               FirstName: {
