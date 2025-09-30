@@ -25,38 +25,10 @@
           document.getElementById("languageInfo").innerHTML = `O idioma foi ajustado para: ${language}`;
           alert(document.getElementById("languageInfo").innerHTML);
           
-          window.addEventListener("onEmbeddedMessagingReady", (e) => {
-            embeddedservice_bootstrap.prechatAPI.setVisiblePrechatFields({
-              FirstName: {
-                value: "Test",
-                isEditableByEndUser: false,
-              },
-              LastName: {
-                value: "Test",
-                isEditableByEndUser: false,
-              },
-              Email: {
-                value: "test@test.com",
-                isEditableByEndUser: false,
-              },
-              Language_Portal: {
-                value: language,
-                isEditableByEndUser: false,
-              },
-              Customer_Identifier: {
-                value: "CustomerID",
-                isEditableByEndUser: false,
-              },
-              Source: {
-                value: "Source",
-                isEditableByEndUser: false,
-              },
-              Country: {
-                value: "Country",
-                isEditableByEndUser: false,
-              },
+         window.addEventListener("onEmbeddedMessagingReady", () => {                
+                embeddedservice_bootstrap.prechatAPI.setHiddenPrechatFields({
+                "Language_Portal__c": language,
             });
-          });
 
           embeddedservice_bootstrap.init(
             "00D1x0000000MUW",
