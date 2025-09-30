@@ -23,12 +23,12 @@
 
           window.addEventListener("onEmbeddedMessagingReady", () => {
             embeddedservice_bootstrap.prechatAPI.setHiddenPrechatFields({
-              Language_Portal: languagePortal,
+              "Language_Portal": languagePortal,
             });
 
             
         embeddedservice_bootstrap.prechatAPI.setVisiblePrechatFields({
-          "Language" : 'pt_BR',
+          "Language" : { value : 'pt_BR', isEditableByEndUser:true}
         });
 });
           embeddedservice_bootstrap.init(
