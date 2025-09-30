@@ -23,10 +23,14 @@
 
           window.addEventListener("onEmbeddedMessagingReady", () => {
             embeddedservice_bootstrap.prechatAPI.setHiddenPrechatFields({
-              "Language_Portal": languagePortal,
+              Language_Portal: languagePortal,
             });
-          });
+          
 
+          embeddedservice_bootstrap.prechatAPI.populatePrechatFormFields({
+            Language: 'pt_BR';
+          });
+});
           embeddedservice_bootstrap.init(
             "00D1x0000000MUW",
             "Sofia_Portal",
