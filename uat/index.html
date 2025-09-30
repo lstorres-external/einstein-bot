@@ -7,7 +7,7 @@
     <script type="text/javascript">
       function getLanguageFromQueryString() {
         const urlParams = new URLSearchParams(window.location.search);
-        return urlParams.get('language') || 'en-US'; 
+        return urlParams.get('language') || 'en-US';
       }
 
       function initEmbeddedMessaging() {
@@ -15,28 +15,24 @@
           var language = getLanguageFromQueryString();
 
           alert('language=== ' + language);
-
           embeddedservice_bootstrap.settings.language = language;
-          
           alert(embeddedservice_bootstrap.settings.language);
-          
+
           document.getElementById("languageInfo").innerHTML = `O idioma foi ajustado para: ${language}`;
           alert(document.getElementById("languageInfo").innerHTML);
-          
-          window.addEventListener("onEmbeddedMessagingReady", () => {                
-                embeddedservice_bootstrap.prechatAPI.setHiddenPrechatFields({
-                "Language_Portal": language,
-            });
-         });
 
-     
+          window.addEventListener("onEmbeddedMessagingReady", () => {
+            embeddedservice_bootstrap.prechatAPI.setHiddenPrechatFields({
+              "Language_Portal": language,
+            });
+          });
+
           embeddedservice_bootstrap.init(
             "00D1x0000000MUW",
             "Sofia_Portal",
             "https://visa-gateway--vgint.sandbox.my.site.com/ESWsofiav21731496032237",
             {
-              scrt2URL:
-                "https://visa-gateway--vgint.sandbox.my.salesforce-scrt.com",
+              scrt2URL: "https://visa-gateway--vgint.sandbox.my.salesforce-scrt.com",
             }
           );
         } catch (err) {
@@ -46,15 +42,20 @@
     </script>
   </head>
   <body>
-
     <div style="display: flex;">
-      <button onclick="window.location.href = 'https://lstorres-external.github.io/einstein-bot/uat/?language=en_US';">English (US)</button>
-      <button onclick="window.location.href = 'https://lstorres-external.github.io/einstein-bot/uat/?language=pt_BR';">Português (BR)</button>
-      <button onclick="window.location.href = 'https://lstorres-external.github.io/einstein-bot/uat/?language=es';">Español (ES)</button>
+      <button onclick="window.location.href = 'https://lstorres-external.github.io/einstein-bot/uat/?language=en_US';">
+        English (US)
+      </button>
+      <button onclick="window.location.href = 'https://lstorres-external.github.io/einstein-bot/uat/?language=pt_BR';">
+        Português (BR)
+      </button>
+      <button onclick="window.location.href = 'https://lstorres-external.github.io/einstein-bot/uat/?language=es';">
+        Español (ES)
+      </button>
     </div>
+
     <div style="text-align: center; margin-top: 20px;">
-     <p id="languageInfo"></p>
-      
+      <p id="languageInfo"></p>
     </div>
 
     <script
