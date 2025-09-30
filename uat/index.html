@@ -16,6 +16,7 @@
 
           alert('language=== ' + language);
           embeddedservice_bootstrap.settings.language = language;
+          alert(embeddedservice_bootstrap.settings.language);
           document.getElementById("languageInfo").innerHTML = `O idioma foi ajustado para: ${language}`;
 
           window.addEventListener("onEmbeddedMessagingReady", (e) => {
