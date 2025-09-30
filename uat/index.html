@@ -12,10 +12,10 @@
 
       function initEmbeddedMessaging() {
         try {
-          var language = getLanguageFromQueryString();
+          var languagePortal = getLanguageFromQueryString();
 
-          alert('language=== ' + language);
-          embeddedservice_bootstrap.settings.language = language;
+          alert('languagePortal=== ' + languagePortal);
+          embeddedservice_bootstrap.settings.language = languagePortal;
           alert(embeddedservice_bootstrap.settings.language);
 
           document.getElementById("languageInfo").innerHTML = `O idioma foi ajustado para: ${language}`;
@@ -23,7 +23,7 @@
 
           window.addEventListener("onEmbeddedMessagingReady", () => {
             embeddedservice_bootstrap.prechatAPI.setHiddenPrechatFields({
-              "Language_Portal": language,
+              "Language_Portal": languagePortal,
             });
           });
 
