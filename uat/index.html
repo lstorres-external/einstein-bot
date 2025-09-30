@@ -13,6 +13,8 @@
       function initEmbeddedMessaging() {
         try {
           var language = getLanguageFromQueryString();
+
+          alert('language=== ' + language);
           embeddedservice_bootstrap.settings.language = language;
           document.getElementById("languageInfo").innerHTML = `O idioma foi ajustado para: ${language}`;
 
