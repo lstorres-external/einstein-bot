@@ -94,6 +94,8 @@
         s.type = 'text/javascript';
         s.src = scriptSrc;
 
+        alert('is private: ' + isPrivate);
+
         s.onload = function() {
           initEmbeddedMessaging();
         };
