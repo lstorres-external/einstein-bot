@@ -10,9 +10,15 @@
         return urlParams.get('language') || 'en-US'; 
       }
 
+      function getIsPrivateFromQueryString() {
+        const urlParams = new URLSearchParams(window.location.search);
+        return urlParams.has('private');
+      }
+
       function initEmbeddedMessaging() {
         try {
           var language = getLanguageFromQueryString();
+          var isPrivate = getIsPrivateFromQueryString();
 
           alert('language=== ' + language);
           embeddedservice_bootstrap.settings.language = language;
@@ -51,15 +57,28 @@
             });
           });
 
-          embeddedservice_bootstrap.init(
-            "00D1x0000000MUW",
-            "Sofia_Public_Portal",
-            "https://visa-gateway--vgint.sandbox.my.site.com/ESWsofiav21731496032237",
-            {
-              scrt2URL:
-                "https://visa-gateway--vgint.sandbox.my.salesforce-scrt.com",
-            }
-          );
+          if(isPrivate) {
+            embeddedservice_bootstrap.init(
+      				'00D1x0000000MUW',
+      				'Sofia_Private_Portal',
+      				'https://visa-gateway--vgint.sandbox.my.site.com/ESWSofiaPrivatePortal1756901319803',
+      				{
+      					scrt2URL: 
+                  'https://visa-gateway--vgint.sandbox.my.salesforce-scrt.com'
+      				}
+      			);
+          }
+          else { 
+            embeddedservice_bootstrap.init(
+              "00D1x0000000MUW",
+              "Sofia_Public_Portal",
+              "https://visa-gateway--vgint.sandbox.my.site.com/ESWsofiav21731496032237",
+              {
+                scrt2URL:
+                  "https://visa-gateway--vgint.sandbox.my.salesforce-scrt.com",
+              }
+            );
+          }
         } catch (err) {
           console.error("Error loading Embedded Messaging: ", err);
         }
