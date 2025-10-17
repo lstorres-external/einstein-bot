@@ -24,7 +24,9 @@
           embeddedservice_bootstrap.settings.language = language;
           document.getElementById("languageInfo").innerHTML = `O idioma foi ajustado para: ${language} \n Área privada: ${isPrivate}`;
 
+          console.log("onEmb");
           window.addEventListener("onEmbeddedMessagingReady", (e) => {
+            console.log("iniciando prechatAPI");
             embeddedservice_bootstrap.prechatAPI.setVisiblePrechatFields({
               FirstName: {
                 value: "Test",
