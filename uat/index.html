@@ -25,102 +25,80 @@
           document.getElementById("languageInfo").innerHTML = `O idioma foi ajustado para: ${language} \n Área privada: ${isPrivate}`;
 
           console.log("onEmb");
-          window.addEventListener("onEmbeddedMessagingReady", (e) => {
-            console.log("iniciando prechatAPI");
-            embeddedservice_bootstrap.prechatAPI.setVisiblePrechatFields({
-              FirstName: {
-                value: "Test",
-                isEditableByEndUser: false,
-              },
-              LastName: {
-                value: "Test",
-                isEditableByEndUser: false,
-              },
-              Email: {
-                value: "test@test.com",
-                isEditableByEndUser: false,
-              },
-              Language: {
-                value: language,
-                isEditableByEndUser: false,
-              },
-              Customer_Identifier: {
-                value: "CustomerID",
-                isEditableByEndUser: false,
-              },
-              Source: {
-                value: "Source",
-                isEditableByEndUser: false,
-              },
-              Country: {
-                value: "Country",
-                isEditableByEndUser: false,
-              },
-              //encrypted token
-              Encrypted_ID_Token_P1__c: {
-                value: "encp1",
-                isEditableByEndUser: false,
-              },
-              Encrypted_ID_Token_P2: {
-                value: "encp2",
-                isEditableByEndUser: false,
-              },
-              Encrypted_ID_Token_P3: {
-                value: "encp3",
-                isEditableByEndUser: false,
-              },
-              Encrypted_ID_Token_P4: {
-                value: "encp4",
-                isEditableByEndUser: false,
-              },
-              Encrypted_ID_Token_P5: {
-                value: "encp5",
-                isEditableByEndUser: false,
-              },
-              Encrypted_ID_Token_P6: {
-                value: "encp6",
-                isEditableByEndUser: false,
-              },
-              Encrypted_ID_Token_P7: {
-                value: "encp7",
-                isEditableByEndUser: false,
-              },
-              Encrypted_ID_Token_P8: {
-                value: "encp8",
-                isEditableByEndUser: false,
-              },
-              Encrypted_ID_Token_P9: {
-                value: "encp9",
-                isEditableByEndUser: false,
-              },
-              Encrypted_ID_Token_P10: {
-                value: "",
-                isEditableByEndUser: false,
-              },
-              Encrypted_ID_Token_P11: {
-                value: "",
-                isEditableByEndUser: false,
-              },
-              Encrypted_ID_Token_P12: {
-                value: "",
-                isEditableByEndUser: false,
-              },
-              Encrypted_ID_Token_P13: {
-                value: "",
-                isEditableByEndUser: false,
-              },
-              Encrypted_ID_Token_P14: {
-                value: "",
-                isEditableByEndUser: false,
-              },
-              Encrypted_ID_Token_P15: {
-                value: "",
-                isEditableByEndUser: false,
-              },
-            });
-          });
-
           if(isPrivate) {
+            window.addEventListener("onEmbeddedMessagingReady", (e) => {
+              console.log("iniciando prechatAPI hidden");
+              embeddedservice_bootstrap.prechatAPI.setHiddenPrechatFields({
+                FirstName: {
+                  value: "Test",
+                },
+                LastName: {
+                  value: "Test",
+                },
+                Email: {
+                  value: "test@test.com",
+                },
+                Language: {
+                  value: language,
+                },
+                Customer_Identifier: {
+                  value: "CustomerID",
+                },
+                Source: {
+                  value: "Source",
+                },
+                Country: {
+                  value: "Country",
+                },
+                //encrypted token
+                Encrypted_ID_Token_P1__c: {
+                  value: "encp1",
+                },
+                Encrypted_ID_Token_P2: {
+                  value: "encp2",
+                },
+                Encrypted_ID_Token_P3: {
+                  value: "encp3",
+                },
+                Encrypted_ID_Token_P4: {
+                  value: "encp4",
+                },
+                Encrypted_ID_Token_P5: {
+                  value: "encp5",
+                },
+                Encrypted_ID_Token_P6: {
+                  value: "encp6",
+                },
+                Encrypted_ID_Token_P7: {
+                  value: "encp7",
+                },
+                Encrypted_ID_Token_P8: {
+                  value: "encp8",
+                },
+                Encrypted_ID_Token_P9: {
+                  value: "encp9",
+                },
+                Encrypted_ID_Token_P10: {
+                  value: "",
+                },
+                Encrypted_ID_Token_P11: {
+                  value: "",
+                },
+                Encrypted_ID_Token_P12: {
+                  value: "",
+                },
+                Encrypted_ID_Token_P13: {
+                  value: "",
+                },
+                Encrypted_ID_Token_P14: {
+                  value: "",
+                },
+                Encrypted_ID_Token_P15: {
+                  value: "",
+                },
+              });
+            });
+
             embeddedservice_bootstrap.init(
       				'00D1x0000000MUW',
       				'Sofia_Private_Portal',
@@ -131,7 +109,7 @@
       				}
       			);
           }
-          else { 
+          else {
             embeddedservice_bootstrap.init(
               "00D1x0000000MUW",
               "Sofia_Public_Portal",
