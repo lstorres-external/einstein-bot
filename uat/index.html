@@ -128,7 +128,7 @@
       function loadBootstrapAndInit() {
         var isPrivate = getIsPrivateFromQueryString();
         var scriptSrc = 'https://visa-gateway--vgint.sandbox.my.site.com/ESWsofiav21731496032237/assets/js/bootstrap.min.js';
-        if(private) {
+        if(isPrivate) {
             scriptSrc = 'https://visa-gateway--vgint.sandbox.my.site.com/ESWSofiaPrivatePortal1756901319803/assets/js/bootstrap.min.js';
         }
         else if (language == "es") {
