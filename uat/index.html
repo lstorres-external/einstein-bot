@@ -7,6 +7,7 @@
     <script type="text/javascript">
       var language = "en_US";
       var isPrivate = false;
+
       function getLanguageFromQueryString() {
         const urlParams = new URLSearchParams(window.location.search);
         return urlParams.get("language") || "en_US";
@@ -174,8 +175,30 @@
         Español (ES)
       </button>
     </div>
+
+    <div style="margin: 10px; text-align: center">
+      <button onclick="togglePrivateParam()">Toggle Private</button>
+      <button onclick="reloadWithCurrentParams()">Recarregar</button>
+    </div>
+
     <div style="text-align: center; margin-top: 20px">
       <p id="languageInfo"></p>
     </div>
+
+    <script>
+      function togglePrivateParam() {
+        const url = new URL(window.location.href);
+        if (url.searchParams.has("private")) {
+          url.searchParams.delete("private");
+        } else {
+          url.searchParams.set("private", "1");
+        }
+        window.location.href = url.toString();
+      }
+
+      function reloadWithCurrentParams() {
+        window.location.reload();
+      }
+    </script>
   </body>
 </html>
