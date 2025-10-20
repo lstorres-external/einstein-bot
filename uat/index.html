@@ -5,11 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Sofia V2 - UAT</title>
     <script type="text/javascript">
-      var language = 'en-US';
+      var language = "en_US";
       var isPrivate = false;
       function getLanguageFromQueryString() {
         const urlParams = new URLSearchParams(window.location.search);
-        return urlParams.get("language") || "en-US";
+        return urlParams.get("language") || "en_US";
       }
 
       function getIsPrivateFromQueryString() {
@@ -127,7 +127,7 @@
       function loadBootstrapAndInit() {
         language = getLanguageFromQueryString();
         isPrivate = getIsPrivateFromQueryString();
-        
+
         var scriptSrc =
           "https://visa-gateway--vgint.sandbox.my.site.com/ESWsofiav21731496032237/assets/js/bootstrap.min.js";
         if (isPrivate) {
