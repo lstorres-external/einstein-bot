@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Sofia V2 - UAT</title>
     <script type="text/javascript">
+      var language = 'en-US';
+      var isPrivate = false;
       function getLanguageFromQueryString() {
         const urlParams = new URLSearchParams(window.location.search);
         return urlParams.get("language") || "en-US";
@@ -17,9 +19,6 @@
 
       function initEmbeddedMessaging() {
         try {
-          var language = getLanguageFromQueryString();
-          var isPrivate = getIsPrivateFromQueryString();
-
           alert("language=== " + language);
           embeddedservice_bootstrap.settings.language = language;
           document.getElementById(
@@ -126,16 +125,20 @@
       }
 
       function loadBootstrapAndInit() {
-        var isPrivate = getIsPrivateFromQueryString();
-        var scriptSrc = 'https://visa-gateway--vgint.sandbox.my.site.com/ESWsofiav21731496032237/assets/js/bootstrap.min.js';
-        if(isPrivate) {
-            scriptSrc = 'https://visa-gateway--vgint.sandbox.my.site.com/ESWSofiaPrivatePortal1756901319803/assets/js/bootstrap.min.js';
-        }
-        else if (language == "es") {
-            scriptSrc = 'https://visa-gateway--vgint.sandbox.my.site.com/ESWSofiaPublicPortalES1760975422873/assets/js/bootstrap.min.js';
-        }
-        else if (language == "pt_BR") {
-            scriptSrc = 'https://visa-gateway--vgint.sandbox.my.site.com/ESWSofiaPublicPortalPT1760975550562/assets/js/bootstrap.min.js';
+        language = getLanguageFromQueryString();
+        isPrivate = getIsPrivateFromQueryString();
+        
+        var scriptSrc =
+          "https://visa-gateway--vgint.sandbox.my.site.com/ESWsofiav21731496032237/assets/js/bootstrap.min.js";
+        if (isPrivate) {
+          scriptSrc =
+            "https://visa-gateway--vgint.sandbox.my.site.com/ESWSofiaPrivatePortal1756901319803/assets/js/bootstrap.min.js";
+        } else if (language == "es") {
+          scriptSrc =
+            "https://visa-gateway--vgint.sandbox.my.site.com/ESWSofiaPublicPortalES1760975422873/assets/js/bootstrap.min.js";
+        } else if (language == "pt_BR") {
+          scriptSrc =
+            "https://visa-gateway--vgint.sandbox.my.site.com/ESWSofiaPublicPortalPT1760975550562/assets/js/bootstrap.min.js";
         }
 
         var s = document.createElement("script");
