@@ -61,21 +61,44 @@
       				'Sofia_Private_Portal',
       				'https://visa-gateway--vgint.sandbox.my.site.com/ESWSofiaPrivatePortal1756901319803',
       				{
-      					scrt2URL: 
-                  'https://visa-gateway--vgint.sandbox.my.salesforce-scrt.com'
+      					scrt2URL: 'https://visa-gateway--vgint.sandbox.my.salesforce-scrt.com'
       				}
       			);
           }
           else {
-            embeddedservice_bootstrap.init(
-              "00D1x0000000MUW",
-              "Sofia_Public_Portal",
-              "https://visa-gateway--vgint.sandbox.my.site.com/ESWsofiav21731496032237",
-              {
-                scrt2URL:
-                  "https://visa-gateway--vgint.sandbox.my.salesforce-scrt.com",
-              }
-            );
+            //es
+            if(language == 'es') {
+              embeddedservice_bootstrap.init(
+        				'00D1x0000000MUW',
+        				'Sofia_Public_Portal_ES',
+        				'https://visa-gateway--vgint.sandbox.my.site.com/ESWSofiaPublicPortalES1760975422873',
+        				{
+        					scrt2URL: 'https://visa-gateway--vgint.sandbox.my.salesforce-scrt.com'
+        				}
+        			);
+            }
+            //pt_BR
+            else if(language == 'pt_BR') {
+              embeddedservice_bootstrap.init(
+        				'00D1x0000000MUW',
+        				'Sofia_Public_Portal_PT',
+        				'https://visa-gateway--vgint.sandbox.my.site.com/ESWSofiaPublicPortalPT1760975550562',
+        				{
+        					scrt2URL: 'https://visa-gateway--vgint.sandbox.my.salesforce-scrt.com'
+        				}
+        			);
+            }
+            //en_US
+            else {
+              embeddedservice_bootstrap.init(
+                "00D1x0000000MUW",
+                "Sofia_Public_Portal",
+                "https://visa-gateway--vgint.sandbox.my.site.com/ESWsofiav21731496032237",
+                {
+                  scrt2URL: "https://visa-gateway--vgint.sandbox.my.salesforce-scrt.com",
+                }
+              );
+            }
           }
         } catch (err) {
           console.error("Error loading Embedded Messaging: ", err);
