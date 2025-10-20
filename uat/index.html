@@ -20,11 +20,12 @@
 
       function initEmbeddedMessaging() {
         try {
-          alert("language=== " + language);
           embeddedservice_bootstrap.settings.language = language;
           document.getElementById(
             "languageInfo"
-          ).innerHTML = `O idioma foi ajustado para: ${language} \n Área privada: ${isPrivate}`;
+          ).innerHTML = ` O idioma foi ajustado para: ${language} <br> Área privada: ${
+            isPrivate ? "Sim" : "Não"
+          }`;
 
           console.log("onEmb");
           if (isPrivate) {
@@ -145,8 +146,6 @@
         var s = document.createElement("script");
         s.type = "text/javascript";
         s.src = scriptSrc;
-
-        alert("is private: " + isPrivate);
 
         s.onload = function () {
           initEmbeddedMessaging();
