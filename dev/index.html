@@ -1,1 +1,135 @@
-test
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sofia V2 - UAT</title>
+    <script type="text/javascript">
+      var language = "en_US";
+
+      function getLanguageFromQueryString() {
+        const urlParams = new URLSearchParams(window.location.search);
+        return urlParams.get("language") || "en_US";
+      }
+
+      function initEmbeddedMessaging() {
+        try {
+          embeddedservice_bootstrap.settings.language = language;
+          document.getElementById(
+            "languageInfo"
+          ).innerHTML = ` O idioma foi ajustado para: ${language}
+
+          console.log("onEmb");
+    
+          //es
+          if (language == "es") {
+            embeddedservice_bootstrap.init(
+              "00D1x0000000MUW",
+              "Sofia_Public_Portal_ES",
+              "https://visa-gateway--visadev6.sandbox.my.site.com/ESWSofiaPublicPortalES1762265953213",
+              {
+                scrt2URL:
+                  "https://visa-gateway--visadev6.sandbox.my.salesforce-scrt.com",
+              }
+            );
+          }
+          //pt_BR
+          else if (language == "pt_BR") {
+            embeddedservice_bootstrap.init(
+              "00D1x0000000MUW",
+              "Sofia_Public_Portal_PT",
+              "https://visa-gateway--visadev6.sandbox.my.site.com/ESWSofiaPublicPortalPT1762266095811",
+              {
+                scrt2URL:
+                  "https://visa-gateway--visadev6.sandbox.my.salesforce-scrt.com",
+              }
+            );
+          }
+          //en_US
+          else {
+            embeddedservice_bootstrap.init(
+      				'00D1x0000000Q5e',
+      				'Sofia_Public_Portal',
+      				'https://visa-gateway--visadev6.sandbox.my.site.com/ESWSofiaPublicPortal1762265766561',
+      				{
+      					scrt2URL: 'https://visa-gateway--visadev6.sandbox.my.salesforce-scrt.com'
+      				}
+      			);
+          }
+        } catch (err) {
+          console.error("Error loading Embedded Messaging: ", err);
+        }
+      }
+
+      function loadBootstrapAndInit() {
+        language = getLanguageFromQueryString();
+        
+        //en_US
+        var scriptSrc =
+          "https://visa-gateway--visadev6.sandbox.my.site.com/ESWSofiaPublicPortal1762265766561/assets/js/bootstrap.min.js";
+        if (language == "es") {
+          scriptSrc =
+            "https://visa-gateway--visadev6.sandbox.my.site.com/ESWSofiaPublicPortalES1762265953213/assets/js/bootstrap.min.js";
+        } else if (language == "pt_BR") {
+          scriptSrc =
+            "https://visa-gateway--visadev6.sandbox.my.site.com/ESWSofiaPublicPortalPT1762266095811/assets/js/bootstrap.min.js";
+        }
+
+        var s = document.createElement("script");
+        s.type = "text/javascript";
+        s.src = scriptSrc;
+
+        s.onload = function () {
+          initEmbeddedMessaging();
+        };
+        document.head.appendChild(s);
+      }
+
+      document.addEventListener("DOMContentLoaded", loadBootstrapAndInit);
+    </script>
+  </head>
+  <body>
+    <div style="margin: 10px; text-align: center">
+      <button
+        onclick="window.location.href = 'https://lstorres-external.github.io/einstein-bot/uat/?language=en_US';"
+      >
+        English (US)
+      </button>
+      <button
+        onclick="window.location.href = 'https://lstorres-external.github.io/einstein-bot/uat/?language=pt_BR';"
+      >
+        Português (BR)
+      </button>
+      <button
+        onclick="window.location.href = 'https://lstorres-external.github.io/einstein-bot/uat/?language=es';"
+      >
+        Español (ES)
+      </button>
+    </div>
+
+    <div style="margin: 10px; text-align: center">
+      <button onclick="togglePrivateParam()">Toggle Private</button>
+      <button onclick="reloadWithCurrentParams()">Recarregar</button>
+    </div>
+
+    <div style="text-align: center; margin-top: 20px">
+      <p id="languageInfo"></p>
+    </div>
+
+    <script>
+      function togglePrivateParam() {
+        const url = new URL(window.location.href);
+        if (url.searchParams.has("private")) {
+          url.searchParams.delete("private");
+        } else {
+          url.searchParams.set("private", "1");
+        }
+        window.location.href = url.toString();
+      }
+
+      function reloadWithCurrentParams() {
+        window.location.reload();
+      }
+    </script>
+  </body>
+</html>
