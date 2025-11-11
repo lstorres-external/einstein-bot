@@ -6,10 +6,16 @@
     <title>Sofia V2 - DEV</title>
     <script type="text/javascript">
       var language = "en_US";
+      var isPrivate = false;
 
       function getLanguageFromQueryString() {
         const urlParams = new URLSearchParams(window.location.search);
         return urlParams.get("language") || "en_US";
+      }
+
+      function getIsPrivateFromQueryString() {
+        const urlParams = new URLSearchParams(window.location.search);
+        return urlParams.has("private");
       }
 
       function initEmbeddedMessaging() {
@@ -17,44 +23,105 @@
           embeddedservice_bootstrap.settings.language = language;
           document.getElementById(
             "languageInfo"
-          ).innerHTML = ` O idioma foi ajustado para: ${language}`;
+          ).innerHTML = ` O idioma foi ajustado para: ${language} <br> Área privada: ${
+            isPrivate ? "Sim" : "Não"
+          }`;
 
           console.log("onEmb");
-    
-          //es
-          if (language == "es") {
+
+          if (isPrivate) {
+            window.addEventListener("onEmbeddedMessagingReady", (e) => {
+              console.log("iniciando prechatAPI hidden");
+              embeddedservice_bootstrap.prechatAPI.setHiddenPrechatFields({
+                Language: language,
+                Source: "Source",
+                IsPrivatePortal: "True",
+                //encrypted token
+                Encrypted_ID_Token_P1:
+                  "exemple1",
+                Encrypted_ID_Token_P2:
+                  "exemple2",
+                Encrypted_ID_Token_P3:
+                  "exemple3",
+                Encrypted_ID_Token_P4:
+                  "exemple4",
+                Encrypted_ID_Token_P5:
+                  "exemple5",
+                Encrypted_ID_Token_P6:
+                  "exemple6",
+                Encrypted_ID_Token_P7:
+                  "exemple7",
+                Encrypted_ID_Token_P8:
+                  "exemple8",
+                Encrypted_ID_Token_P9:
+                  "exemple9",
+                Encrypted_ID_Token_P10:
+                  "exemple10",
+                Encrypted_ID_Token_P11:
+                  "exemple11",
+                Encrypted_ID_Token_P12:
+                  "exemple12",
+                Encrypted_ID_Token_P13:
+                  "exemple13",
+                Encrypted_ID_Token_P14:
+                  "exemple14",
+                Encrypted_ID_Token_P15:
+                  "exemple15",
+                Encrypted_ID_Token_P16:
+                  "exemple16",
+                Encrypted_ID_Token_P17:
+                  "exemple17",
+                Encrypted_ID_Token_P18:
+                  "exemple18",
+                Encrypted_ID_Token_P19:
+                  "exemple19",
+                Encrypted_ID_Token_P20:
+                  "exemple20",
+            
+              });
+            });
+
             embeddedservice_bootstrap.init(
-              "00D1x0000000MUW",
-              "Sofia_Public_Portal_ES",
-              "https://visa-gateway--visadev6.sandbox.my.site.com/ESWSofiaPublicPortalES1762265953213",
-              {
-                scrt2URL:
-                  "https://visa-gateway--visadev6.sandbox.my.salesforce-scrt.com",
-              }
-            );
-          }
-          //pt_BR
-          else if (language == "pt_BR") {
-            embeddedservice_bootstrap.init(
-              "00D1x0000000MUW",
-              "Sofia_Public_Portal_PT",
-              "https://visa-gateway--visadev6.sandbox.my.site.com/ESWSofiaPublicPortalPT1762266095811",
-              {
-                scrt2URL:
-                  "https://visa-gateway--visadev6.sandbox.my.salesforce-scrt.com",
-              }
-            );
-          }
-          //en_US
-          else {
-            embeddedservice_bootstrap.init(
-      				'00D1x0000000Q5e',
-      				'Sofia_Public_Portal',
-      				'https://visa-gateway--visadev6.sandbox.my.site.com/ESWSofiaPublicPortal1762265766561',
+      				'00DbY00000FgXq9',
+      				'Sofia_Private_Portal',
+      				'https://visa-gateway--dev2025.sandbox.my.site.com/ESWSofiaPrivatePortal1762885941878',
       				{
-      					scrt2URL: 'https://visa-gateway--visadev6.sandbox.my.salesforce-scrt.com'
+      					scrt2URL: 'https://visa-gateway--dev2025.sandbox.my.salesforce-scrt.com'
       				}
       			);
+          } else {
+            if (language == "es") {
+              embeddedservice_bootstrap.init(
+        				'00DbY00000FgXq9',
+        				'Sofia_Public_Portal_ES',
+        				'https://visa-gateway--dev2025.sandbox.my.site.com/ESWSofiaPublicPortalES1762885700907',
+        				{
+        					scrt2URL: 'https://visa-gateway--dev2025.sandbox.my.salesforce-scrt.com'
+        				}
+        			);
+            }
+            //pt_BR
+            else if (language == "pt_BR") {
+              embeddedservice_bootstrap.init(
+        				'00DbY00000FgXq9',
+        				'Sofia_Public_Portal_PT',
+        				'https://visa-gateway--dev2025.sandbox.my.site.com/ESWSofiaPublicPortalPT1762885809583',
+        				{
+        					scrt2URL: 'https://visa-gateway--dev2025.sandbox.my.salesforce-scrt.com'
+        				}
+        			);
+            }
+            //en_US
+            else {
+              embeddedservice_bootstrap.init(
+        				'00DbY00000FgXq9',
+        				'Sofia_Public_Portal',
+        				'https://visa-gateway--dev2025.sandbox.my.site.com/ESWSofia1746619645236',
+        				{
+        					scrt2URL: 'https://visa-gateway--dev2025.sandbox.my.salesforce-scrt.com'
+        				}
+        			);
+            }
           }
         } catch (err) {
           console.error("Error loading Embedded Messaging: ", err);
@@ -66,13 +133,16 @@
         
         //en_US
         var scriptSrc =
-          "https://visa-gateway--visadev6.sandbox.my.site.com/ESWSofiaPublicPortal1762265766561/assets/js/bootstrap.min.js";
-        if (language == "es") {
+          "https://visa-gateway--dev2025.sandbox.my.site.com/ESWSofia1746619645236/assets/js/bootstrap.min.js";
+	if (isPrivate) {
           scriptSrc =
-            "https://visa-gateway--visadev6.sandbox.my.site.com/ESWSofiaPublicPortalES1762265953213/assets/js/bootstrap.min.js";
+            "https://visa-gateway--dev2025.sandbox.my.site.com/ESWSofiaPrivatePortal1762885941878/assets/js/bootstrap.min.js";
+        } else if (language == "es") {
+      	  scriptSrc = 
+	    "https://visa-gateway--dev2025.sandbox.my.site.com/ESWSofiaPublicPortalES1762885700907/assets/js/bootstrap.min.js";
         } else if (language == "pt_BR") {
           scriptSrc =
-            "https://visa-gateway--visadev6.sandbox.my.site.com/ESWSofiaPublicPortalPT1762266095811/assets/js/bootstrap.min.js";
+            "https://visa-gateway--dev2025.sandbox.my.site.com/ESWSofiaPublicPortalPT1762885809583/assets/js/bootstrap.min.js";
         }
 
         var s = document.createElement("script");
@@ -108,6 +178,7 @@
     </div>
 
     <div style="margin: 10px; text-align: center">
+      <button onclick="togglePrivateParam()">Toggle Private</button>
       <button onclick="reloadWithCurrentParams()">Recarregar</button>
     </div>
 
