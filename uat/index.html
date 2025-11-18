@@ -83,10 +83,10 @@
             embeddedservice_bootstrap.init(
               "00D1x0000000MUW",
               "Sofia_Private_Portal",
-              "https://visa-gateway--vgint.sandbox.my.site.com/ESWSofiaPrivatePortal1756901319803",
+              "https://visa-gateway--uat.sandbox.my.site.com/ESWSofiaPrivatePortal17634261410891",
               {
                 scrt2URL:
-                  "https://visa-gateway--vgint.sandbox.my.salesforce-scrt.com",
+                  "https://visa-gateway--uat.sandbox.my.salesforce-scrt.com",
               }
             );
           } else {
@@ -95,10 +95,10 @@
               embeddedservice_bootstrap.init(
                 "00D1x0000000MUW",
                 "Sofia_Public_Portal_ES",
-                "https://visa-gateway--vgint.sandbox.my.site.com/ESWSofiaPublicPortalES1760975422873",
+                "https://visa-gateway--uat.sandbox.my.site.com/ESWSofiaPublicPortalES1763424858243",
                 {
                   scrt2URL:
-                    "https://visa-gateway--vgint.sandbox.my.salesforce-scrt.com",
+                    "https://visa-gateway--uat.sandbox.my.salesforce-scrt.com",
                 }
               );
             }
@@ -107,10 +107,10 @@
               embeddedservice_bootstrap.init(
                 "00D1x0000000MUW",
                 "Sofia_Public_Portal_PT",
-                "https://visa-gateway--vgint.sandbox.my.site.com/ESWSofiaPublicPortalPT1760975550562",
+                "https://visa-gateway--uat.sandbox.my.site.com/ESWSofiaPublicPortalPT1763425294952",
                 {
                   scrt2URL:
-                    "https://visa-gateway--vgint.sandbox.my.salesforce-scrt.com",
+                    "https://visa-gateway--uat.sandbox.my.salesforce-scrt.com",
                 }
               );
             }
@@ -119,10 +119,10 @@
               embeddedservice_bootstrap.init(
                 "00D1x0000000MUW",
                 "Sofia_Public_Portal",
-                "https://visa-gateway--vgint.sandbox.my.site.com/ESWsofiav21731496032237",
+                "https://visa-gateway--uat.sandbox.my.site.com/ESWSofia1746619645236",
                 {
                   scrt2URL:
-                    "https://visa-gateway--vgint.sandbox.my.salesforce-scrt.com",
+                    "https://visa-gateway--uat.sandbox.my.salesforce-scrt.com",
                 }
               );
             }
@@ -137,16 +137,16 @@
         isPrivate = getIsPrivateFromQueryString();
 
         var scriptSrc =
-          "https://visa-gateway--vgint.sandbox.my.site.com/ESWsofiav21731496032237/assets/js/bootstrap.min.js";
+          "https://visa-gateway--uat.sandbox.my.site.com/ESWSofia1746619645236/assets/js/bootstrap.min.js";
         if (isPrivate) {
           scriptSrc =
-            "https://visa-gateway--vgint.sandbox.my.site.com/ESWSofiaPrivatePortal1756901319803/assets/js/bootstrap.min.js";
+            "https://visa-gateway--uat.sandbox.my.site.com/ESWSofiaPrivatePortal17634261410891/assets/js/bootstrap.min.js";
         } else if (language == "es") {
           scriptSrc =
-            "https://visa-gateway--vgint.sandbox.my.site.com/ESWSofiaPublicPortalES1760975422873/assets/js/bootstrap.min.js";
+            "https://visa-gateway--uat.sandbox.my.site.com/ESWSofiaPublicPortalES1763424858243/assets/js/bootstrap.min.js";
         } else if (language == "pt_BR") {
           scriptSrc =
-            "https://visa-gateway--vgint.sandbox.my.site.com/ESWSofiaPublicPortalPT1760975550562/assets/js/bootstrap.min.js";
+            "https://visa-gateway--uat.sandbox.my.site.com/ESWSofiaPublicPortalPT1763425294952/assets/js/bootstrap.min.js";
         }
 
         var s = document.createElement("script");
