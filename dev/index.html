@@ -35,14 +35,14 @@
 		  let endCheckTimeout = null;
 
 		  // Listener para detectar quando mensagens são enviadas
-		  window.addEventListener("onEmbeddedMessagingSendMessage", (event) => {
+		  window.addEventListener("embeddedmessagesent", (event) => {
 			console.log("📤 Mensagem enviada:", event);
 			conversationActive = true;
 			lastMessageTime = Date.now();
 		  });
 
 		  // Listener para detectar quando mensagens são recebidas
-		  window.addEventListener("onEmbeddedMessagingReceiveMessage", (event) => {
+		  window.addEventListener("embeddedmessagereceived", (event) => {
 			console.log("📥 Mensagem recebida:", event);
 			conversationActive = true;
 			lastMessageTime = Date.now();
@@ -52,10 +52,13 @@
 			  const message = event.detail || event;
 			  const text = message.text || message.message || '';
 			  
+			  console.log("Texto da mensagem:", text);
+			  
 			  if (text.toLowerCase().includes('encerr') || 
 			      text.toLowerCase().includes('saiu') ||
 			      text.toLowerCase().includes('ended') ||
-			      text.toLowerCase().includes('left')) {
+			      text.toLowerCase().includes('left') ||
+			      text.toLowerCase().includes('bot encerrou')) {
 				console.log("🔴 Mensagem de encerramento detectada!");
 				
 				// Aguarda alguns segundos e verifica se o chat ainda está ativo
@@ -73,6 +76,11 @@
 		  // Listener para quando o chat estiver pronto
 		  window.addEventListener("onEmbeddedMessagingReady", () => {
 			console.log("Chat pronto - listeners configurados");
+			
+			// Tenta usar a API de settings se disponível
+			if (embeddedservice_bootstrap.settings) {
+			  console.log("Settings disponíveis:", embeddedservice_bootstrap.settings);
+			}
 		  });
 
 		  function handleConversationEnded() {
