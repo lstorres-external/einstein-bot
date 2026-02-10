@@ -51,14 +51,70 @@
 			});
 			
 			// Monitora mudanças no localStorage que o Salesforce pode usar
+			let lastStorageData = null;
+			let conversationStarted = false;
+			
 			const originalSetItem = localStorage.setItem;
 			localStorage.setItem = function(key, value) {
 			  console.log('LocalStorage change:', key, value);
-			  if (key.includes('conversation') || key.includes('session')) {
-				console.log('Conversa/Session mudou:', key, value);
+			  
+			  // Detecta quando a conversa inicia (JWT é criado)
+			  if (key.includes('WEB_STORAGE') && value.includes('JWT')) {
+				const data = JSON.parse(value);
+				if (data.JWT && !conversationStarted) {
+				  conversationStarted = true;
+				  console.log('🟢 Conversa iniciada detectada');
+				}
+				lastStorageData = data;
 			  }
+			  
 			  originalSetItem.apply(this, arguments);
 			};
+			
+			// Monitora remoção de itens do localStorage
+			const originalRemoveItem = localStorage.removeItem;
+			localStorage.removeItem = function(key) {
+			  console.log('LocalStorage removed:', key);
+			  if (key.includes('WEB_STORAGE') && conversationStarted) {
+				console.log('🔴 Conversa pode ter sido encerrada (storage removido)');
+				conversationStarted = false;
+				handleConversationEnded();
+			  }
+			  originalRemoveItem.apply(this, arguments);
+			};
+			
+			// Verifica periodicamente se o JWT expirou ou foi removido
+			let checkCount = 0;
+			setInterval(() => {
+			  const storageKey = Object.keys(localStorage).find(k => k.includes('WEB_STORAGE'));
+			  if (storageKey) {
+				try {
+				  const currentData = JSON.parse(localStorage.getItem(storageKey));
+				  
+				  // Se tinha JWT e agora não tem mais, conversa encerrada
+				  if (conversationStarted && lastStorageData && lastStorageData.JWT && !currentData.JWT) {
+					console.log('🔴 JWT removido - conversa encerrada');
+					conversationStarted = false;
+					handleConversationEnded();
+				  }
+				  
+				  lastStorageData = currentData;
+				} catch (err) {
+				  // Ignora erros de parse
+				}
+			  } else if (conversationStarted) {
+				// Storage foi completamente removido
+				console.log('🔴 Storage completo removido - conversa encerrada');
+				conversationStarted = false;
+				handleConversationEnded();
+			  }
+			  
+			  // Log de debug a cada 20 segundos
+			  checkCount++;
+			  if (checkCount % 10 === 0) {
+				console.log('Status:', conversationStarted ? 'Conversa ativa' : 'Sem conversa');
+			  }
+			}, 2000);
 			
 			// Adiciona botão customizado para encerrar e resetar
 			setTimeout(() => {
