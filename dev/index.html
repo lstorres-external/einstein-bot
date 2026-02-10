@@ -47,10 +47,14 @@
 				  if (node.nodeType === 1) { // Element node
 					// Verifica se contém texto indicando que a conversa foi encerrada
 					const text = node.textContent || '';
-					if (text.includes('encerrou o chat') || 
+					console.log("Texto detectado:", text); // Debug
+					if (text.includes('bot encerrou o chat') || 
+						text.includes('saiu') ||
 						text.includes('ended the chat') || 
+						text.includes('bot ended the chat') ||
+						text.includes('left') ||
 						text.includes('cerró el chat') ||
-						text.includes('Conversation has ended')) {
+						text.includes('salió')) {
 					  console.log("Detectado encerramento da conversa!");
 					  handleConversationEnded();
 					  observer.disconnect(); // Para de observar após detectar
