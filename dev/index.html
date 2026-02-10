@@ -32,45 +32,41 @@
 		  // Variável para controlar se já encerramos
 		  let conversationEnded = false;
 		  let checkInterval;
+		  let lastConversationId = null;
 
 		  // Listener para quando o chat estiver pronto
 		  window.addEventListener("onEmbeddedMessagingReady", () => {
 			console.log("Chat pronto - configurando verificação de encerramento");
+			console.log("API disponível:", embeddedservice_bootstrap.conversationAPI);
 			
 			// Verifica periodicamente se a conversa foi encerrada
 			checkInterval = setInterval(() => {
 			  try {
-				// Verifica se o botão de chat está visível (chat minimizado = conversa pode ter sido encerrada)
-				const chatButton = document.querySelector('button[class*="embeddedMessagingFrame"]');
-				const chatFrame = document.querySelector('iframe[class*="embeddedMessagingFrame"]');
-				
-				// Se o iframe do chat existe mas está sendo fechado/minimizado, pode ser um encerramento
-				if (chatFrame && !conversationEnded) {
-				  const frameStyle = window.getComputedStyle(chatFrame);
-				  
-				  // Tenta detectar através da visibilidade do frame
-				  if (frameStyle.display === 'none' || frameStyle.visibility === 'hidden') {
-					console.log("Possível encerramento detectado via visibilidade do frame");
-				  }
-				}
-				
 				// Tenta usar a API de conversação se disponível
-				if (embeddedservice_bootstrap.conversationAPI && !conversationEnded) {
+				if (embeddedservice_bootstrap.conversationAPI) {
 				  embeddedservice_bootstrap.conversationAPI.getConversationId().then(id => {
-					if (!id && conversationEnded === false) {
-					  console.log("Conversa encerrada detectada via API!");
+					console.log("Conversation ID atual:", id, "| Último ID:", lastConversationId);
+					
+					// Se tinha conversa e agora não tem mais
+					if (lastConversationId !== null && !id && !conversationEnded) {
+					  console.log("🔴 Conversa encerrada detectada via API!");
 					  conversationEnded = true;
 					  clearInterval(checkInterval);
 					  handleConversationEnded();
+					} else if (id) {
+					  // Atualiza o último ID conhecido
+					  lastConversationId = id;
 					}
 				  }).catch(err => {
-					// Silenciosamente ignora erros da API
+					console.log("Erro ao obter conversation ID:", err);
 				  });
+				} else {
+				  console.log("conversationAPI não disponível");
 				}
 			  } catch (err) {
-				// Ignora erros silenciosamente
+				console.log("Erro no checkInterval:", err);
 			  }
-			}, 1000); // Verifica a cada 1 segundo
+			}, 2000); // Verifica a cada 2 segundos
 		  });
 
 		  function handleConversationEnded() {
