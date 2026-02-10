@@ -32,12 +32,14 @@
 		  // Variável para controlar se já detectamos o encerramento
 		  let chatEnded = false;
 
-		  // Evento oficial: Detecta SessionStatusChanged (funciona para botão E sistema)
+		  // Evento oficial: Detecta quando a sessão é encerrada
 		  window.addEventListener("onEmbeddedMessagingSessionStatusUpdate", (event) => {
 			console.log("📊 onEmbeddedMessagingSessionStatusUpdate disparado:", event.detail);
 			
 			try {
 			  const data = event.detail;
+			  
+			  // Detecta SessionStatusChanged (encerramento de sessão)
 			  if (data && data.conversationEntry && data.conversationEntry.entryType === 'SessionStatusChanged') {
 				const payload = JSON.parse(data.conversationEntry.entryPayload);
 				console.log("📊 SessionStatusChanged:", payload.sessionStatus);
@@ -51,7 +53,7 @@
 				}
 			  }
 			} catch (err) {
-			  console.error("Erro ao processar evento de sessão:", err);
+			  console.error("Erro ao processar evento:", err);
 			}
 		  });
 
@@ -62,32 +64,38 @@
 		  });
 
 		  function handleConversationEnded() {
-			console.log("🔄 Iniciando processo de reset do chat...");
+			console.log("🔄 Tentando fechar a conversa (CloseConversation)...");
 			
-			// Aguarda 5 segundos para o usuário ver a mensagem de encerramento
-			setTimeout(() => {
-			  console.log("💫 Executando clearSession...");
-			  
-			  try {
-				// Usa o método oficial clearSession do userVerificationAPI
+			try {
+			  // Verifica se existe método para fechar conversa
+			  if (embeddedservice_bootstrap.conversationAPI && 
+				  typeof embeddedservice_bootstrap.conversationAPI.closeConversation === 'function') {
+				embeddedservice_bootstrap.conversationAPI.closeConversation();
+				console.log("✅ closeConversation executado com sucesso");
+			  } else if (embeddedservice_bootstrap.utilAPI && 
+						 typeof embeddedservice_bootstrap.utilAPI.closeConversation === 'function') {
+				embeddedservice_bootstrap.utilAPI.closeConversation();
+				console.log("✅ utilAPI.closeConversation executado com sucesso");
+			  } else {
+				console.log("❌ closeConversation não encontrado, tentando clearSession...");
+				
+				// Fallback para clearSession
 				if (embeddedservice_bootstrap.userVerificationAPI && 
 					typeof embeddedservice_bootstrap.userVerificationAPI.clearSession === 'function') {
 				  embeddedservice_bootstrap.userVerificationAPI.clearSession();
-				  console.log("✅ clearSession executado com sucesso");
-				} else {
-				  console.log("❌ clearSession não disponível");
+				  console.log("✅ clearSession executado como fallback");
 				}
-				
-				// Reseta a flag após 2 segundos
-				setTimeout(() => {
-				  chatEnded = false;
-				  console.log("✅ Sistema resetado para nova conversa");
-				}, 2000);
-			  } catch (err) {
-				console.error("❌ Erro ao executar clearSession:", err);
-				chatEnded = false;
 			  }
-			}, 5000); // 5 segundos após detectar o encerramento
+			  
+			  // Reseta a flag após 1 segundo
+			  setTimeout(() => {
+				chatEnded = false;
+				console.log("✅ Sistema resetado para nova conversa");
+			  }, 1000);
+			} catch (err) {
+			  console.error("❌ Erro ao executar closeConversation:", err);
+			  chatEnded = false;
+			}
 		  }
 
 		  if (isPrivate) {
