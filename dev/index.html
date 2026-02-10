@@ -29,169 +29,68 @@
 
 		  console.log("onEmb");
 
+		  // Variáveis para controlar o estado da conversa
+		  let conversationActive = false;
+		  let lastMessageTime = null;
+		  let endCheckTimeout = null;
+
+		  // Listener para detectar quando mensagens são enviadas
+		  window.addEventListener("onEmbeddedMessagingSendMessage", (event) => {
+			console.log("📤 Mensagem enviada:", event);
+			conversationActive = true;
+			lastMessageTime = Date.now();
+		  });
+
+		  // Listener para detectar quando mensagens são recebidas
+		  window.addEventListener("onEmbeddedMessagingReceiveMessage", (event) => {
+			console.log("📥 Mensagem recebida:", event);
+			conversationActive = true;
+			lastMessageTime = Date.now();
+			
+			// Verifica se é uma mensagem de encerramento do bot
+			try {
+			  const message = event.detail || event;
+			  const text = message.text || message.message || '';
+			  
+			  if (text.toLowerCase().includes('encerr') || 
+			      text.toLowerCase().includes('saiu') ||
+			      text.toLowerCase().includes('ended') ||
+			      text.toLowerCase().includes('left')) {
+				console.log("🔴 Mensagem de encerramento detectada!");
+				
+				// Aguarda alguns segundos e verifica se o chat ainda está ativo
+				if (endCheckTimeout) clearTimeout(endCheckTimeout);
+				endCheckTimeout = setTimeout(() => {
+				  console.log("Verificando se conversa realmente encerrou...");
+				  handleConversationEnded();
+				}, 5000); // 5 segundos após a mensagem de encerramento
+			  }
+			} catch (err) {
+			  console.log("Erro ao processar mensagem:", err);
+			}
+		  });
+
 		  // Listener para quando o chat estiver pronto
 		  window.addEventListener("onEmbeddedMessagingReady", () => {
-			console.log("Chat pronto - aguardando interação para detectar encerramento");
-			
-			// Tenta adicionar todos os eventos possíveis para debugging
-			const possibleEvents = [
-			  'onEmbeddedMessagingConversationEnded',
-			  'afterDestroy',
-			  'afterMinimize',
-			  'onEmbeddedMessagingEndOfConversation',
-			  'embeddedservice:conversationEnded',
-			  'conversationEnded'
-			];
-			
-			possibleEvents.forEach(eventName => {
-			  window.addEventListener(eventName, (e) => {
-				console.log(`✅ Evento detectado: ${eventName}`, e);
-				handleConversationEnded();
-			  });
-			});
-			
-			// Monitora mudanças no localStorage que o Salesforce pode usar
-			let lastStorageData = null;
-			let conversationStarted = false;
-			
-			const originalSetItem = localStorage.setItem;
-			localStorage.setItem = function(key, value) {
-			  console.log('LocalStorage change:', key, value);
-			  
-			  // Detecta quando a conversa inicia (JWT é criado)
-			  if (key.includes('WEB_STORAGE') && value.includes('JWT')) {
-				const data = JSON.parse(value);
-				if (data.JWT && !conversationStarted) {
-				  conversationStarted = true;
-				  console.log('🟢 Conversa iniciada detectada');
-				}
-				lastStorageData = data;
-			  }
-			  
-			  originalSetItem.apply(this, arguments);
-			};
-			
-			// Monitora remoção de itens do localStorage
-			const originalRemoveItem = localStorage.removeItem;
-			localStorage.removeItem = function(key) {
-			  console.log('LocalStorage removed:', key);
-			  if (key.includes('WEB_STORAGE') && conversationStarted) {
-				console.log('🔴 Conversa pode ter sido encerrada (storage removido)');
-				conversationStarted = false;
-				handleConversationEnded();
-			  }
-			  originalRemoveItem.apply(this, arguments);
-			};
-			
-			// Verifica periodicamente se o JWT expirou ou foi removido
-			let checkCount = 0;
-			setInterval(() => {
-			  const storageKey = Object.keys(localStorage).find(k => k.includes('WEB_STORAGE'));
-			  if (storageKey) {
-				try {
-				  const currentData = JSON.parse(localStorage.getItem(storageKey));
-				  
-				  // Se tinha JWT e agora não tem mais, conversa encerrada
-				  if (conversationStarted && lastStorageData && lastStorageData.JWT && !currentData.JWT) {
-					console.log('🔴 JWT removido - conversa encerrada');
-					conversationStarted = false;
-					handleConversationEnded();
-				  }
-				  
-				  lastStorageData = currentData;
-				} catch (err) {
-				  // Ignora erros de parse
-				}
-			  } else if (conversationStarted) {
-				// Storage foi completamente removido
-				console.log('🔴 Storage completo removido - conversa encerrada');
-				conversationStarted = false;
-				handleConversationEnded();
-			  }
-			  
-			  // Log de debug a cada 20 segundos
-			  checkCount++;
-			  if (checkCount % 10 === 0) {
-				console.log('Status:', conversationStarted ? 'Conversa ativa' : 'Sem conversa');
-			  }
-			}, 2000);
-			
-			// Adiciona botão customizado para encerrar e resetar
-			setTimeout(() => {
-			  addResetButton();
-			}, 2000);
+			console.log("Chat pronto - listeners configurados");
 		  });
-		  
-		  function addResetButton() {
-			// Cria um botão flutuante para resetar manualmente
-			const resetBtn = document.createElement('button');
-			resetBtn.innerHTML = '🔄 Resetar Chat';
-			resetBtn.style.cssText = `
-			  position: fixed;
-			  bottom: 100px;
-			  right: 20px;
-			  z-index: 9999;
-			  background: #ff5722;
-			  color: white;
-			  border: none;
-			  padding: 12px 20px;
-			  border-radius: 25px;
-			  font-weight: bold;
-			  cursor: pointer;
-			  box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-			  display: none;
-			`;
-			
-			resetBtn.onclick = () => {
-			  console.log("Botão de reset clicado");
-			  handleConversationEnded();
-			};
-			
-			document.body.appendChild(resetBtn);
-			
-			// Mostra o botão apenas quando o chat estiver aberto
-			const checkChatState = setInterval(() => {
-			  const chatFrame = document.querySelector('iframe[title*="chat" i], iframe[class*="messaging" i]');
-			  if (chatFrame && chatFrame.style.display !== 'none') {
-				resetBtn.style.display = 'block';
-			  } else {
-				resetBtn.style.display = 'none';
-			  }
-			}, 500);
-		  }
 
 		  function handleConversationEnded() {
-			console.log("Iniciando processo de fechamento do chat...");
+			console.log("🔄 Iniciando processo de reset do chat...");
+			conversationActive = false;
 			
-			// Aguarda 2 segundos
+			// Aguarda 3 segundos
 			setTimeout(() => {
 			  console.log("Fechando chat...");
 			  try {
 				if (embeddedservice_bootstrap && embeddedservice_bootstrap.minimizeWindow) {
 				  embeddedservice_bootstrap.minimizeWindow();
-				  console.log("Chat minimizado com sucesso");
-				  
-				  // Limpa o localStorage relacionado ao chat para forçar reset
-				  setTimeout(() => {
-					try {
-					  Object.keys(localStorage).forEach(key => {
-						if (key.includes('EMBEDDED_MESSAGING') || 
-						    key.includes('embeddedService') ||
-						    key.includes('conversation')) {
-						  console.log("Limpando:", key);
-						  localStorage.removeItem(key);
-						}
-					  });
-					  console.log("✅ Chat resetado - próxima conversa será uma nova sessão");
-					} catch (err) {
-					  console.log("Erro ao limpar localStorage:", err);
-					}
-				  }, 500);
+				  console.log("✅ Chat minimizado - pronto para nova sessão");
 				}
 			  } catch (err) {
 				console.error("Erro ao minimizar chat:", err);
 			  }
-			}, 2000);
+			}, 3000);
 		  }
 
 		  if (isPrivate) {
