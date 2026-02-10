@@ -64,15 +64,62 @@
 		  });
 
 		  function handleConversationEnded() {
-			console.log("� Sessão encerrada - mantendo chat visível com input bloqueado");
+			console.log("🔴 Sessão encerrada - bloqueando input do chat");
 			
-			// Não fazemos nada - o Salesforce já bloqueia o input automaticamente
-			// quando a sessão termina. Deixamos o chat aberto para o usuário ver o histórico.
+			try {
+			  // Tenta encontrar e desabilitar o textarea/input do chat
+			  const chatFrame = document.querySelector('iframe[title*="chat" i], iframe[class*="messaging" i]');
+			  
+			  if (chatFrame && chatFrame.contentWindow) {
+				// Envia postMessage para o iframe tentar desabilitar o input
+				chatFrame.contentWindow.postMessage({
+				  type: 'disableInput',
+				  disabled: true
+				}, '*');
+				console.log("📤 Mensagem de desabilitar input enviada ao iframe");
+			  }
+			  
+			  // Também tenta via DOM (caso não seja cross-origin)
+			  try {
+				const inputField = chatFrame?.contentDocument?.querySelector('textarea[placeholder*="mensagem" i], textarea[placeholder*="message" i], input[type="text"]');
+				if (inputField) {
+				  inputField.disabled = true;
+				  inputField.placeholder = "Conversa encerrada. Feche e reabra o chat para iniciar uma nova.";
+				  console.log("✅ Input desabilitado via DOM");
+				}
+			  } catch (e) {
+				console.log("⚠️ Não foi possível acessar o DOM do iframe (cross-origin)");
+			  }
+			  
+			  // Adiciona CSS para ocultar o input
+			  const style = document.createElement('style');
+			  style.id = 'chat-input-blocker';
+			  style.textContent = `
+				iframe[title*="chat" i] textarea,
+				iframe[title*="chat" i] input[type="text"],
+				.embeddedMessaging textarea,
+				.embeddedMessaging input {
+				  pointer-events: none !important;
+				  opacity: 0.5 !important;
+				  cursor: not-allowed !important;
+				}
+			  `;
+			  
+			  // Remove estilo antigo se existir
+			  const oldStyle = document.getElementById('chat-input-blocker');
+			  if (oldStyle) oldStyle.remove();
+			  
+			  document.head.appendChild(style);
+			  console.log("✅ CSS de bloqueio aplicado");
+			  
+			} catch (err) {
+			  console.error("❌ Erro ao bloquear input:", err);
+			}
 			
 			// Reseta a flag após 1 segundo
 			setTimeout(() => {
 			  chatEnded = false;
-			  console.log("✅ Flag resetada para detectar próxima conversa");
+			  console.log("✅ Flag resetada");
 			}, 1000);
 		  }
 
