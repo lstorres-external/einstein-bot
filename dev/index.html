@@ -32,47 +32,33 @@
 		  // Variável para controlar se já detectamos o encerramento
 		  let chatEnded = false;
 
-		  // Intercepta todas as mensagens postMessage
-		  window.addEventListener("message", (event) => {
-			// Mostra apenas mensagens importantes (não tudo)
-			if (event.data && event.data.method === 'EMBEDDED_MESSAGING_DISPATCH_EVENT_TO_HOST') {
-			  console.log("📨 Evento do chat:", event.data);
-			  
-			  // Expande o data para ver o conteúdo
-			  if (event.data.data) {
-				console.log("   Dados do evento:", event.data.data);
-			  }
-			}
+		  // Evento oficial do Salesforce para detectar quando a sessão encerra
+		  window.addEventListener("onEmbeddedMessagingSessionStatusUpdate", (event) => {
+			console.log("📊 Status da sessão mudou:", event.detail);
 			
-			try {
-			  const data = typeof event.data === 'string' ? JSON.parse(event.data) : event.data;
-			  
-			  // Verifica diferentes estruturas de dados possíveis
-			  const dataString = JSON.stringify(data).toLowerCase();
-			  
-			  // Detecção mais específica: procura por "ended" E "chat" juntos
-			  if ((dataString.includes('encerrou') && dataString.includes('chat')) || 
-			      (dataString.includes('ended') && dataString.includes('chat')) ||
-			      (dataString.includes('chatbot') && dataString.includes('ended')) ||
-			      (dataString.includes('bot encerrou'))) {
-				console.log("🔴 Mensagem de encerramento detectada no postMessage!");
-				if (!chatEnded) {
-				  chatEnded = true;
-				  handleConversationEnded();
-				}
+			// Verifica se o status mudou para "Ended"
+			if (event.detail && event.detail.sessionStatus === 'Ended') {
+			  console.log("🔴 Sessão encerrada detectada!");
+			  if (!chatEnded) {
+				chatEnded = true;
+				handleConversationEnded();
 			  }
-			} catch (err) {
-			  // Ignora erros silenciosamente
 			}
-		  }, false);
+		  });
+
+		  // Também escuta o evento de fechamento da conversa
+		  window.addEventListener("onEmbeddedMessagingConversationClosed", (event) => {
+			console.log("🔴 Conversa fechada:", event.detail);
+			if (!chatEnded) {
+			  chatEnded = true;
+			  handleConversationEnded();
+			}
+		  });
 
 		  // Listener para quando o chat estiver pronto
 		  window.addEventListener("onEmbeddedMessagingReady", () => {
-			console.log("Chat pronto - monitoramento de postMessage ativo");
-			
-			// Verifica se minimizeWindow existe
+			console.log("Chat pronto - eventos de encerramento configurados");
 			console.log("minimizeWindow disponível?", typeof embeddedservice_bootstrap.minimizeWindow);
-			console.log("embeddedservice_bootstrap:", embeddedservice_bootstrap);
 		  });
 
 		  function handleConversationEnded() {
@@ -81,31 +67,20 @@
 			// Aguarda 5 segundos para o usuário ver a mensagem de encerramento
 			setTimeout(() => {
 			  console.log("Fechando chat...");
-			  console.log("embeddedservice_bootstrap está disponível?", typeof embeddedservice_bootstrap);
-			  console.log("minimizeWindow está disponível?", typeof embeddedservice_bootstrap.minimizeWindow);
 			  
 			  try {
-				if (embeddedservice_bootstrap) {
-				  if (embeddedservice_bootstrap.minimizeWindow) {
-					embeddedservice_bootstrap.minimizeWindow();
-					console.log("✅ minimizeWindow() chamado");
-				  } else {
-					console.log("❌ minimizeWindow não existe - tentando alternativas");
-					// Tenta alternativas
-					if (typeof embeddedservice_bootstrap.minimize === 'function') {
-					  embeddedservice_bootstrap.minimize();
-					  console.log("✅ minimize() chamado");
-					} else {
-					  console.log("❌ Nenhuma função de minimizar encontrada");
-					  console.log("Funções disponíveis:", Object.keys(embeddedservice_bootstrap));
-					}
-				  }
+				if (embeddedservice_bootstrap && embeddedservice_bootstrap.minimizeWindow) {
+				  embeddedservice_bootstrap.minimizeWindow();
+				  console.log("✅ Chat minimizado com sucesso");
 				  
 				  // Reseta a flag após 2 segundos
 				  setTimeout(() => {
 					chatEnded = false;
 					console.log("Sistema resetado para nova conversa");
 				  }, 2000);
+				} else {
+				  console.log("❌ minimizeWindow não disponível");
+				  console.log("Métodos disponíveis:", Object.keys(embeddedservice_bootstrap));
 				}
 			  } catch (err) {
 				console.error("Erro ao minimizar chat:", err);
