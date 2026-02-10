@@ -29,76 +29,76 @@
 
 		  console.log("onEmb");
 
-		  // Variáveis para controlar o estado da conversa
-		  let conversationActive = false;
-		  let lastMessageTime = null;
-		  let endCheckTimeout = null;
-
-		  // Listener para detectar quando mensagens são enviadas
-		  window.addEventListener("embeddedmessagesent", (event) => {
-			console.log("📤 Mensagem enviada:", event);
-			conversationActive = true;
-			lastMessageTime = Date.now();
-		  });
-
-		  // Listener para detectar quando mensagens são recebidas
-		  window.addEventListener("embeddedmessagereceived", (event) => {
-			console.log("📥 Mensagem recebida:", event);
-			conversationActive = true;
-			lastMessageTime = Date.now();
-			
-			// Verifica se é uma mensagem de encerramento do bot
-			try {
-			  const message = event.detail || event;
-			  const text = message.text || message.message || '';
-			  
-			  console.log("Texto da mensagem:", text);
-			  
-			  if (text.toLowerCase().includes('encerr') || 
-			      text.toLowerCase().includes('saiu') ||
-			      text.toLowerCase().includes('ended') ||
-			      text.toLowerCase().includes('left') ||
-			      text.toLowerCase().includes('bot encerrou')) {
-				console.log("🔴 Mensagem de encerramento detectada!");
-				
-				// Aguarda alguns segundos e verifica se o chat ainda está ativo
-				if (endCheckTimeout) clearTimeout(endCheckTimeout);
-				endCheckTimeout = setTimeout(() => {
-				  console.log("Verificando se conversa realmente encerrou...");
-				  handleConversationEnded();
-				}, 5000); // 5 segundos após a mensagem de encerramento
-			  }
-			} catch (err) {
-			  console.log("Erro ao processar mensagem:", err);
-			}
-		  });
+		  // Variável para controlar se já detectamos o encerramento
+		  let chatEnded = false;
+		  let checkInterval;
 
 		  // Listener para quando o chat estiver pronto
 		  window.addEventListener("onEmbeddedMessagingReady", () => {
-			console.log("Chat pronto - listeners configurados");
+			console.log("Chat pronto - iniciando monitoramento de encerramento");
 			
-			// Tenta usar a API de settings se disponível
-			if (embeddedservice_bootstrap.settings) {
-			  console.log("Settings disponíveis:", embeddedservice_bootstrap.settings);
-			}
+			// Inicia o polling para verificar se o chat foi encerrado
+			checkInterval = setInterval(() => {
+			  if (chatEnded) return;
+			  
+			  try {
+				// Procura por todos os iframes do Embedded Messaging
+				const iframes = document.querySelectorAll('iframe');
+				
+				for (let iframe of iframes) {
+				  try {
+					// Tenta acessar o conteúdo do iframe (só funciona se for same-origin)
+					const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+					const bodyText = iframeDoc.body ? iframeDoc.body.innerText : '';
+					
+					// Verifica se contém os textos de encerramento
+					if (bodyText.includes('bot encerrou o chat') || 
+					    bodyText.includes('Você encerrou o chat') ||
+					    bodyText.includes('agente encerrou o chat') ||
+					    bodyText.includes('encerrou o chat às')) {
+					  console.log("🔴 Chat encerrado detectado!");
+					  chatEnded = true;
+					  clearInterval(checkInterval);
+					  handleConversationEnded();
+					  break;
+					}
+				  } catch (err) {
+					// Iframe é cross-origin, não podemos acessar
+					// Silenciosamente ignora e continua verificando
+				  }
+				}
+			  } catch (err) {
+				console.log("Erro ao verificar iframes:", err);
+			  }
+			}, 2000); // Verifica a cada 2 segundos
+			
+			console.log("Monitoramento iniciado - verificando a cada 2 segundos");
 		  });
 
 		  function handleConversationEnded() {
 			console.log("🔄 Iniciando processo de reset do chat...");
-			conversationActive = false;
 			
-			// Aguarda 3 segundos
+			// Aguarda 5 segundos para o usuário ver a mensagem de encerramento
 			setTimeout(() => {
 			  console.log("Fechando chat...");
 			  try {
 				if (embeddedservice_bootstrap && embeddedservice_bootstrap.minimizeWindow) {
 				  embeddedservice_bootstrap.minimizeWindow();
 				  console.log("✅ Chat minimizado - pronto para nova sessão");
+				  
+				  // Reseta a flag após 2 segundos
+				  setTimeout(() => {
+					chatEnded = false;
+					// Reinicia o monitoramento
+					if (!checkInterval) {
+					  checkInterval = setInterval(arguments.callee, 2000);
+					}
+				  }, 2000);
 				}
 			  } catch (err) {
 				console.error("Erro ao minimizar chat:", err);
 			  }
-			}, 3000);
+			}, 5000); // 5 segundos após detectar o encerramento
 		  }
 
 		  if (isPrivate) {
