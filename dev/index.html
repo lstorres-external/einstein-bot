@@ -29,26 +29,59 @@
 
 		  console.log("onEmb");
 
-			// Listener para detectar quando a conversa é encerrada
-		  window.addEventListener("onEmbeddedMessagingConversationEnded", (e) => {
-			console.log("Conversa encerrada, aguardando alguns segundos para fechar...");
+		  // Listener para quando o chat estiver pronto
+		  window.addEventListener("onEmbeddedMessagingReady", () => {
+			console.log("Chat pronto - configurando listeners");
 			
-			// Aguardar 3 segundos antes de mostrar o alerta e fechar
-			setTimeout(() => {
-			  // Envia uma mensagem dentro do chat para avisar o usuário
-			  embeddedservice_bootstrap.conversationAPI.sendMessage({
-				text: "Esta conversa será encerrada em breve para evitar criar múltiplas sessões. Por favor, clique no ícone do chat novamente se precisar de mais ajuda.",
-				type: "text"
-			  }).catch(err => console.log("Erro ao enviar mensagem:", err));
+			// Tenta adicionar listener de eventos de conversa
+			try {
+			  // Listener para quando a conversa é encerrada
+			  window.addEventListener("onEmbeddedMessagingConversationEnded", (event) => {
+				console.log("Conversa encerrada detectada!", event);
+				handleConversationEnded();
+			  });
 			  
-			  // Aguarda mais 2 segundos para o usuário ler a mensagem e então minimiza o chat
-			  setTimeout(() => {
-				embeddedservice_bootstrap.minimizeWindow();
-				console.log("Chat minimizado para resetar a sessão");
-			  }, 2000);
-			}, 3000);
+			  console.log("Listener de conversa encerrada adicionado com sucesso");
+			} catch (err) {
+			  console.error("Erro ao adicionar listener:", err);
+			}
 		  });
+
+		  function handleConversationEnded() {
+			console.log("Iniciando processo de fechamento do chat...");
 			
+			// Aguarda 3 segundos
+			setTimeout(() => {
+			  console.log("Tentando inserir mensagem de aviso...");
+			  
+			  // Tenta inserir mensagem no chat usando DOM
+			  try {
+				const chatMessages = document.querySelector('.embeddedMessagingConversationView');
+				if (chatMessages) {
+				  const warningDiv = document.createElement('div');
+				  warningDiv.style.cssText = 'background: #ffeb3b; padding: 12px; margin: 10px; border-radius: 8px; text-align: center; font-weight: bold; color: #000;';
+				  warningDiv.textContent = 'Esta conversa será encerrada em breve para evitar criar múltiplas sessões.';
+				  chatMessages.appendChild(warningDiv);
+				  console.log("Mensagem de aviso inserida");
+				}
+			  } catch (err) {
+				console.log("Erro ao inserir mensagem:", err);
+			  }
+			  
+			  // Aguarda mais 3 segundos e fecha o chat
+			  setTimeout(() => {
+				console.log("Fechando chat...");
+				try {
+				  if (embeddedservice_bootstrap && embeddedservice_bootstrap.minimizeWindow) {
+					embeddedservice_bootstrap.minimizeWindow();
+					console.log("Chat minimizado com sucesso");
+				  }
+				} catch (err) {
+				  console.error("Erro ao minimizar chat:", err);
+				}
+			  }, 3000);
+			}, 3000);
+		  }
 
 		  if (isPrivate) {
 			window.addEventListener("onEmbeddedMessagingReady", (e) => {
