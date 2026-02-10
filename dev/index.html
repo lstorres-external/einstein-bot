@@ -32,39 +32,26 @@
 		  // Variável para controlar se já detectamos o encerramento
 		  let chatEnded = false;
 
-		  // Evento oficial: Detecta quando o status da sessão muda
+		  // Evento oficial: Detecta SessionStatusChanged (funciona para botão E sistema)
 		  window.addEventListener("onEmbeddedMessagingSessionStatusUpdate", (event) => {
 			console.log("📊 onEmbeddedMessagingSessionStatusUpdate disparado:", event.detail);
 			
 			try {
-			  const payload = event.detail;
-			  if (payload && payload.sessionStatus === 'Ended') {
-				console.log("🔴 Sessão encerrada detectada!");
-				if (!chatEnded) {
-				  chatEnded = true;
-				  handleConversationEnded();
+			  const data = event.detail;
+			  if (data && data.conversationEntry && data.conversationEntry.entryType === 'SessionStatusChanged') {
+				const payload = JSON.parse(data.conversationEntry.entryPayload);
+				console.log("📊 SessionStatusChanged:", payload.sessionStatus);
+				
+				if (payload.sessionStatus === 'Ended') {
+				  console.log("🔴 Sessão encerrada detectada!");
+				  if (!chatEnded) {
+					chatEnded = true;
+					handleConversationEnded();
+				  }
 				}
 			  }
 			} catch (err) {
 			  console.error("Erro ao processar evento de sessão:", err);
-			}
-		  });
-
-		  // Evento oficial: Detecta quando o chat é fechado
-		  window.addEventListener("onEmbeddedMessagingWindowClosed", (event) => {
-			console.log("🔴 onEmbeddedMessagingWindowClosed disparado:", event.detail);
-			if (!chatEnded) {
-			  chatEnded = true;
-			  handleConversationEnded();
-			}
-		  });
-
-		  // Evento oficial: Detecta quando a conversa é fechada
-		  window.addEventListener("onEmbeddedMessagingConversationClosed", (event) => {
-			console.log("🔴 onEmbeddedMessagingConversationClosed disparado:", event.detail);
-			if (!chatEnded) {
-			  chatEnded = true;
-			  handleConversationEnded();
 			}
 		  });
 
