@@ -31,21 +31,46 @@
 
 		  // Listener para quando o chat estiver pronto
 		  window.addEventListener("onEmbeddedMessagingReady", () => {
-			console.log("Chat pronto - configurando listeners");
+			console.log("Chat pronto - configurando MutationObserver");
 			
-			// Tenta adicionar listener de eventos de conversa
-			try {
-			  // Listener para quando a conversa é encerrada
-			  window.addEventListener("onEmbeddedMessagingConversationEnded", (event) => {
-				console.log("Conversa encerrada detectada!", event);
-				handleConversationEnded();
-			  });
-			  
-			  console.log("Listener de conversa encerrada adicionado com sucesso");
-			} catch (err) {
-			  console.error("Erro ao adicionar listener:", err);
-			}
+			// Aguarda um pouco para garantir que o DOM do chat está montado
+			setTimeout(() => {
+			  setupConversationEndDetection();
+			}, 1000);
 		  });
+
+		  function setupConversationEndDetection() {
+			// Observa mudanças no DOM do chat
+			const observer = new MutationObserver((mutations) => {
+			  mutations.forEach((mutation) => {
+				mutation.addedNodes.forEach((node) => {
+				  if (node.nodeType === 1) { // Element node
+					// Verifica se contém texto indicando que a conversa foi encerrada
+					const text = node.textContent || '';
+					if (text.includes('encerrou o chat') || 
+						text.includes('ended the chat') || 
+						text.includes('cerró el chat') ||
+						text.includes('Conversation has ended')) {
+					  console.log("Detectado encerramento da conversa!");
+					  handleConversationEnded();
+					  observer.disconnect(); // Para de observar após detectar
+					}
+				  }
+				});
+			  });
+			});
+
+			// Inicia observação no container do chat
+			const chatContainer = document.body;
+			if (chatContainer) {
+			  observer.observe(chatContainer, {
+				childList: true,
+				subtree: true,
+				characterData: true
+			  });
+			  console.log("MutationObserver configurado com sucesso");
+			}
+		  }
 
 		  function handleConversationEnded() {
 			console.log("Iniciando processo de fechamento do chat...");
@@ -54,15 +79,18 @@
 			setTimeout(() => {
 			  console.log("Tentando inserir mensagem de aviso...");
 			  
-			  // Tenta inserir mensagem no chat usando DOM
+			  // Insere mensagem de aviso no chat
 			  try {
-				const chatMessages = document.querySelector('.embeddedMessagingConversationView');
-				if (chatMessages) {
+				// Procura o container de mensagens
+				const messageContainer = document.querySelector('.messageArea, .embeddedMessagingConversationView, [class*="conversationMessageList"]');
+				if (messageContainer) {
 				  const warningDiv = document.createElement('div');
-				  warningDiv.style.cssText = 'background: #ffeb3b; padding: 12px; margin: 10px; border-radius: 8px; text-align: center; font-weight: bold; color: #000;';
+				  warningDiv.style.cssText = 'background: #ffeb3b; padding: 12px; margin: 10px; border-radius: 8px; text-align: center; font-weight: bold; color: #000; box-shadow: 0 2px 4px rgba(0,0,0,0.2);';
 				  warningDiv.textContent = 'Esta conversa será encerrada em breve para evitar criar múltiplas sessões.';
-				  chatMessages.appendChild(warningDiv);
+				  messageContainer.appendChild(warningDiv);
 				  console.log("Mensagem de aviso inserida");
+				} else {
+				  console.log("Container de mensagens não encontrado");
 				}
 			  } catch (err) {
 				console.log("Erro ao inserir mensagem:", err);
