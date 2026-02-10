@@ -27,71 +27,7 @@
 			isPrivate ? "Sim" : "Não"
 		  }`;
 
-		  console.log("onEmb");
-
-		  // Variável para controlar se já detectamos o encerramento
-		  let chatEnded = false;
-
-		  // Evento oficial: Detecta quando a sessão é encerrada
-		  window.addEventListener("onEmbeddedMessagingSessionStatusUpdate", (event) => {
-			console.log("📊 onEmbeddedMessagingSessionStatusUpdate disparado:", event.detail);
-			
-			try {
-			  const data = event.detail;
-			  
-			  // Detecta SessionStatusChanged (encerramento de sessão)
-			  if (data && data.conversationEntry && data.conversationEntry.entryType === 'SessionStatusChanged') {
-				const payload = JSON.parse(data.conversationEntry.entryPayload);
-				console.log("📊 SessionStatusChanged:", payload.sessionStatus);
-				
-				if (payload.sessionStatus === 'Ended') {
-				  console.log("🔴 Sessão encerrada detectada!");
-				  if (!chatEnded) {
-					chatEnded = true;
-					handleConversationEnded();
-				  }
-				}
-			  }
-			} catch (err) {
-			  console.error("Erro ao processar evento:", err);
-			}
-		  });
-
-		  // Listener para quando o chat estiver pronto
-		  window.addEventListener("onEmbeddedMessagingReady", () => {
-			console.log("✅ Chat pronto - eventos de encerramento configurados");
-			console.log("Métodos disponíveis:", Object.keys(embeddedservice_bootstrap));
-		  });
-
-		  function handleConversationEnded() {
-			console.log("🔴 Sessão encerrada - limpando sem fechar o chat...");
-			
-			try {
-			  // Usa clearSession(false) para limpar SEM fechar a janela
-			  if (embeddedservice_bootstrap.userVerificationAPI && 
-				  typeof embeddedservice_bootstrap.userVerificationAPI.clearSession === 'function') {
-				embeddedservice_bootstrap.userVerificationAPI.clearSession(false)
-				  .then(() => {
-					console.log("✅ clearSession(false) executado - chat limpo mas ainda visível");
-					// Reseta a flag
-					setTimeout(() => {
-					  chatEnded = false;
-					  console.log("✅ Flag resetada");
-					}, 500);
-				  })
-				  .catch((error) => {
-					console.error("❌ Erro ao executar clearSession:", error);
-					chatEnded = false;
-				  });
-			  } else {
-				console.log("❌ clearSession não disponível");
-				chatEnded = false;
-			  }
-			} catch (err) {
-			  console.error("❌ Erro ao executar clearSession:", err);
-			  chatEnded = false;
-			}
-		  }
+		  console.log("onEmb");			
 
 		  if (isPrivate) {
 			window.addEventListener("onEmbeddedMessagingReady", (e) => {
