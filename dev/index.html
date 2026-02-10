@@ -31,48 +31,47 @@
 
 		  // Variável para controlar se já detectamos o encerramento
 		  let chatEnded = false;
-		  let checkInterval;
+
+		  // Intercepta todas as mensagens postMessage
+		  window.addEventListener("message", (event) => {
+			// Log de todas as mensagens para debug
+			console.log("📨 PostMessage recebido:", event.data);
+			
+			try {
+			  const data = typeof event.data === 'string' ? JSON.parse(event.data) : event.data;
+			  
+			  // Verifica diferentes estruturas de dados possíveis
+			  const dataString = JSON.stringify(data).toLowerCase();
+			  
+			  if (dataString.includes('encerr') || 
+			      dataString.includes('ended') ||
+			      dataString.includes('saiu') ||
+			      dataString.includes('left') ||
+			      dataString.includes('conversation') && dataString.includes('end')) {
+				console.log("🔴 Mensagem de encerramento detectada no postMessage!");
+				if (!chatEnded) {
+				  chatEnded = true;
+				  handleConversationEnded();
+				}
+			  }
+			} catch (err) {
+			  // Se não é JSON, verifica como string
+			  const dataStr = String(event.data).toLowerCase();
+			  if (dataStr.includes('encerr') || 
+			      dataStr.includes('ended') ||
+			      dataStr.includes('saiu')) {
+				console.log("🔴 Texto de encerramento detectado!");
+				if (!chatEnded) {
+				  chatEnded = true;
+				  handleConversationEnded();
+				}
+			  }
+			}
+		  }, false);
 
 		  // Listener para quando o chat estiver pronto
 		  window.addEventListener("onEmbeddedMessagingReady", () => {
-			console.log("Chat pronto - iniciando monitoramento de encerramento");
-			
-			// Inicia o polling para verificar se o chat foi encerrado
-			checkInterval = setInterval(() => {
-			  if (chatEnded) return;
-			  
-			  try {
-				// Procura por todos os iframes do Embedded Messaging
-				const iframes = document.querySelectorAll('iframe');
-				
-				for (let iframe of iframes) {
-				  try {
-					// Tenta acessar o conteúdo do iframe (só funciona se for same-origin)
-					const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
-					const bodyText = iframeDoc.body ? iframeDoc.body.innerText : '';
-					
-					// Verifica se contém os textos de encerramento
-					if (bodyText.includes('bot encerrou o chat') || 
-					    bodyText.includes('Você encerrou o chat') ||
-					    bodyText.includes('agente encerrou o chat') ||
-					    bodyText.includes('encerrou o chat às')) {
-					  console.log("🔴 Chat encerrado detectado!");
-					  chatEnded = true;
-					  clearInterval(checkInterval);
-					  handleConversationEnded();
-					  break;
-					}
-				  } catch (err) {
-					// Iframe é cross-origin, não podemos acessar
-					// Silenciosamente ignora e continua verificando
-				  }
-				}
-			  } catch (err) {
-				console.log("Erro ao verificar iframes:", err);
-			  }
-			}, 2000); // Verifica a cada 2 segundos
-			
-			console.log("Monitoramento iniciado - verificando a cada 2 segundos");
+			console.log("Chat pronto - monitoramento de postMessage ativo");
 		  });
 
 		  function handleConversationEnded() {
@@ -89,10 +88,7 @@
 				  // Reseta a flag após 2 segundos
 				  setTimeout(() => {
 					chatEnded = false;
-					// Reinicia o monitoramento
-					if (!checkInterval) {
-					  checkInterval = setInterval(arguments.callee, 2000);
-					}
+					console.log("Sistema resetado para nova conversa");
 				  }, 2000);
 				}
 			  } catch (err) {
