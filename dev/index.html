@@ -29,6 +29,27 @@
 
 		  console.log("onEmb");
 
+			// Listener para detectar quando a conversa é encerrada
+		  window.addEventListener("onEmbeddedMessagingConversationEnded", (e) => {
+			console.log("Conversa encerrada, aguardando alguns segundos para fechar...");
+			
+			// Aguardar 3 segundos antes de mostrar o alerta e fechar
+			setTimeout(() => {
+			  // Envia uma mensagem dentro do chat para avisar o usuário
+			  embeddedservice_bootstrap.conversationAPI.sendMessage({
+				text: "Esta conversa será encerrada em breve para evitar criar múltiplas sessões. Por favor, clique no ícone do chat novamente se precisar de mais ajuda.",
+				type: "text"
+			  }).catch(err => console.log("Erro ao enviar mensagem:", err));
+			  
+			  // Aguarda mais 2 segundos para o usuário ler a mensagem e então minimiza o chat
+			  setTimeout(() => {
+				embeddedservice_bootstrap.minimizeWindow();
+				console.log("Chat minimizado para resetar a sessão");
+			  }, 2000);
+			}, 3000);
+		  });
+			
+
 		  if (isPrivate) {
 			window.addEventListener("onEmbeddedMessagingReady", (e) => {
 			  console.log("iniciando prechatAPI hidden");
