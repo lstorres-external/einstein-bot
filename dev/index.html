@@ -32,45 +32,45 @@
 		  // Variável para controlar se já detectamos o encerramento
 		  let chatEnded = false;
 
-		  // Intercepta postMessage para detectar SessionStatusChanged
-		  window.addEventListener("message", (event) => {
+		  // Evento oficial: Detecta quando o status da sessão muda
+		  window.addEventListener("onEmbeddedMessagingSessionStatusUpdate", (event) => {
+			console.log("📊 onEmbeddedMessagingSessionStatusUpdate disparado:", event.detail);
+			
 			try {
-			  const data = typeof event.data === 'string' ? JSON.parse(event.data) : event.data;
-			  
-			  // Detecta SessionStatusChanged com status Ended
-			  if (data && data.data && data.data.conversationEntry) {
-				const entry = data.data.conversationEntry;
-				
-				if (entry.entryType === 'SessionStatusChanged') {
-				  const payload = JSON.parse(entry.entryPayload);
-				  console.log("📊 Status da sessão mudou:", payload.sessionStatus);
-				  
-				  if (payload.sessionStatus === 'Ended') {
-					console.log("🔴 Sessão encerrada detectada!");
-					if (!chatEnded) {
-					  chatEnded = true;
-					  handleConversationEnded();
-					}
-				  }
-				}
-				
-				// Também detecta CloseConversation
-				if (entry.entryType === 'CloseConversation') {
-				  console.log("🔴 Conversa fechada detectada!");
-				  if (!chatEnded) {
-					chatEnded = true;
-					handleConversationEnded();
-				  }
+			  const payload = event.detail;
+			  if (payload && payload.sessionStatus === 'Ended') {
+				console.log("🔴 Sessão encerrada detectada!");
+				if (!chatEnded) {
+				  chatEnded = true;
+				  handleConversationEnded();
 				}
 			  }
 			} catch (err) {
-			  // Ignora erros silenciosamente
+			  console.error("Erro ao processar evento de sessão:", err);
+			}
+		  });
+
+		  // Evento oficial: Detecta quando o chat é fechado
+		  window.addEventListener("onEmbeddedMessagingWindowClosed", (event) => {
+			console.log("🔴 onEmbeddedMessagingWindowClosed disparado:", event.detail);
+			if (!chatEnded) {
+			  chatEnded = true;
+			  handleConversationEnded();
+			}
+		  });
+
+		  // Evento oficial: Detecta quando a conversa é fechada
+		  window.addEventListener("onEmbeddedMessagingConversationClosed", (event) => {
+			console.log("🔴 onEmbeddedMessagingConversationClosed disparado:", event.detail);
+			if (!chatEnded) {
+			  chatEnded = true;
+			  handleConversationEnded();
 			}
 		  });
 
 		  // Listener para quando o chat estiver pronto
 		  window.addEventListener("onEmbeddedMessagingReady", () => {
-			console.log("Chat pronto - eventos de encerramento configurados");
+			console.log("✅ Chat pronto - eventos de encerramento configurados");
 			console.log("Métodos disponíveis:", Object.keys(embeddedservice_bootstrap));
 		  });
 
@@ -79,36 +79,26 @@
 			
 			// Aguarda 5 segundos para o usuário ver a mensagem de encerramento
 			setTimeout(() => {
-			  console.log("Fechando chat...");
+			  console.log("💫 Executando clearSession...");
 			  
 			  try {
-				// Tenta encontrar o iframe do chat e escondê-lo
-				const chatFrame = document.querySelector('iframe[title*="chat" i], iframe[class*="messaging" i]');
-				if (chatFrame) {
-				  chatFrame.style.display = 'none';
-				  console.log("✅ Chat ocultado com sucesso");
+				// Usa o método oficial clearSession do userVerificationAPI
+				if (embeddedservice_bootstrap.userVerificationAPI && 
+					typeof embeddedservice_bootstrap.userVerificationAPI.clearSession === 'function') {
+				  embeddedservice_bootstrap.userVerificationAPI.clearSession();
+				  console.log("✅ clearSession executado com sucesso");
 				} else {
-				  console.log("❌ Iframe do chat não encontrado");
-				}
-				
-				// Tenta clicar no botão de minimizar do chat
-				const minimizeButton = document.querySelector('button[title*="Minimizar" i], button[aria-label*="Minimizar" i]');
-				if (minimizeButton) {
-				  minimizeButton.click();
-				  console.log("✅ Botão minimizar clicado");
+				  console.log("❌ clearSession não disponível");
 				}
 				
 				// Reseta a flag após 2 segundos
 				setTimeout(() => {
 				  chatEnded = false;
-				  // Mostra o chat novamente se foi escondido
-				  if (chatFrame) {
-					chatFrame.style.display = '';
-				  }
-				  console.log("Sistema resetado para nova conversa");
+				  console.log("✅ Sistema resetado para nova conversa");
 				}, 2000);
 			  } catch (err) {
-				console.error("Erro ao minimizar chat:", err);
+				console.error("❌ Erro ao executar clearSession:", err);
+				chatEnded = false;
 			  }
 			}, 5000); // 5 segundos após detectar o encerramento
 		  }
