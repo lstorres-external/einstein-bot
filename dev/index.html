@@ -64,31 +64,33 @@
 		  });
 
 		  function handleConversationEnded() {
-			console.log("🔴 Sessão encerrada - aguardando 3 segundos antes de limpar...");
+			console.log("🔴 Sessão encerrada - limpando sem fechar o chat...");
 			
-			// Aguarda 3 segundos para o usuário ver a mensagem de encerramento
-			setTimeout(() => {
-			  console.log("💫 Executando clearSession...");
-			  
-			  try {
-				// Usa o método oficial clearSession
-				if (embeddedservice_bootstrap.userVerificationAPI && 
-					typeof embeddedservice_bootstrap.userVerificationAPI.clearSession === 'function') {
-				  embeddedservice_bootstrap.userVerificationAPI.clearSession();
-				  console.log("✅ clearSession executado - chat resetado");
-				} else {
-				  console.log("❌ clearSession não disponível");
-				}
-			  } catch (err) {
-				console.error("❌ Erro ao executar clearSession:", err);
-			  }
-			  
-			  // Reseta a flag
-			  setTimeout(() => {
+			try {
+			  // Usa clearSession(false) para limpar SEM fechar a janela
+			  if (embeddedservice_bootstrap.userVerificationAPI && 
+				  typeof embeddedservice_bootstrap.userVerificationAPI.clearSession === 'function') {
+				embeddedservice_bootstrap.userVerificationAPI.clearSession(false)
+				  .then(() => {
+					console.log("✅ clearSession(false) executado - chat limpo mas ainda visível");
+					// Reseta a flag
+					setTimeout(() => {
+					  chatEnded = false;
+					  console.log("✅ Flag resetada");
+					}, 500);
+				  })
+				  .catch((error) => {
+					console.error("❌ Erro ao executar clearSession:", error);
+					chatEnded = false;
+				  });
+			  } else {
+				console.log("❌ clearSession não disponível");
 				chatEnded = false;
-				console.log("✅ Flag resetada");
-			  }, 500);
-			}, 3000); // 3 segundos de delay
+			  }
+			} catch (err) {
+			  console.error("❌ Erro ao executar clearSession:", err);
+			  chatEnded = false;
+			}
 		  }
 
 		  if (isPrivate) {
