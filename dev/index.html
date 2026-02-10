@@ -29,89 +29,84 @@
 
 		  console.log("onEmb");
 
+		  // Variável para controlar se já encerramos
+		  let conversationEnded = false;
+		  let checkInterval;
+
 		  // Listener para quando o chat estiver pronto
 		  window.addEventListener("onEmbeddedMessagingReady", () => {
-			console.log("Chat pronto - configurando MutationObserver");
+			console.log("Chat pronto - configurando verificação de encerramento");
 			
-			// Aguarda um pouco para garantir que o DOM do chat está montado
-			setTimeout(() => {
-			  setupConversationEndDetection();
-			}, 1000);
-		  });
-
-		  function setupConversationEndDetection() {
-			// Observa mudanças no DOM do chat
-			const observer = new MutationObserver((mutations) => {
-			  mutations.forEach((mutation) => {
-				mutation.addedNodes.forEach((node) => {
-				  if (node.nodeType === 1) { // Element node
-					// Verifica se contém texto indicando que a conversa foi encerrada
-					const text = node.textContent || '';
-					console.log("Texto detectado:", text); // Debug
-					if (text.includes('bot encerrou o chat') || 
-						text.includes('saiu') ||
-						text.includes('ended the chat') || 
-						text.includes('bot ended the chat') ||
-						text.includes('left') ||
-						text.includes('cerró el chat') ||
-						text.includes('salió')) {
-					  console.log("Detectado encerramento da conversa!");
-					  handleConversationEnded();
-					  observer.disconnect(); // Para de observar após detectar
-					}
+			// Verifica periodicamente se a conversa foi encerrada
+			checkInterval = setInterval(() => {
+			  try {
+				// Verifica se o botão de chat está visível (chat minimizado = conversa pode ter sido encerrada)
+				const chatButton = document.querySelector('button[class*="embeddedMessagingFrame"]');
+				const chatFrame = document.querySelector('iframe[class*="embeddedMessagingFrame"]');
+				
+				// Se o iframe do chat existe mas está sendo fechado/minimizado, pode ser um encerramento
+				if (chatFrame && !conversationEnded) {
+				  const frameStyle = window.getComputedStyle(chatFrame);
+				  
+				  // Tenta detectar através da visibilidade do frame
+				  if (frameStyle.display === 'none' || frameStyle.visibility === 'hidden') {
+					console.log("Possível encerramento detectado via visibilidade do frame");
 				  }
-				});
-			  });
-			});
-
-			// Inicia observação no container do chat
-			const chatContainer = document.body;
-			if (chatContainer) {
-			  observer.observe(chatContainer, {
-				childList: true,
-				subtree: true,
-				characterData: true
-			  });
-			  console.log("MutationObserver configurado com sucesso");
-			}
-		  }
+				}
+				
+				// Tenta usar a API de conversação se disponível
+				if (embeddedservice_bootstrap.conversationAPI && !conversationEnded) {
+				  embeddedservice_bootstrap.conversationAPI.getConversationId().then(id => {
+					if (!id && conversationEnded === false) {
+					  console.log("Conversa encerrada detectada via API!");
+					  conversationEnded = true;
+					  clearInterval(checkInterval);
+					  handleConversationEnded();
+					}
+				  }).catch(err => {
+					// Silenciosamente ignora erros da API
+				  });
+				}
+			  } catch (err) {
+				// Ignora erros silenciosamente
+			  }
+			}, 1000); // Verifica a cada 1 segundo
+		  });
 
 		  function handleConversationEnded() {
 			console.log("Iniciando processo de fechamento do chat...");
 			
 			// Aguarda 3 segundos
 			setTimeout(() => {
-			  console.log("Tentando inserir mensagem de aviso...");
+			  console.log("Abrindo chat para mostrar mensagem...");
 			  
-			  // Insere mensagem de aviso no chat
+			  // Primeiro, garante que o chat está maximizado para mostrar a mensagem
 			  try {
-				// Procura o container de mensagens
-				const messageContainer = document.querySelector('.messageArea, .embeddedMessagingConversationView, [class*="conversationMessageList"]');
-				if (messageContainer) {
-				  const warningDiv = document.createElement('div');
-				  warningDiv.style.cssText = 'background: #ffeb3b; padding: 12px; margin: 10px; border-radius: 8px; text-align: center; font-weight: bold; color: #000; box-shadow: 0 2px 4px rgba(0,0,0,0.2);';
-				  warningDiv.textContent = 'Esta conversa será encerrada em breve para evitar criar múltiplas sessões.';
-				  messageContainer.appendChild(warningDiv);
-				  console.log("Mensagem de aviso inserida");
-				} else {
-				  console.log("Container de mensagens não encontrado");
+				if (embeddedservice_bootstrap && embeddedservice_bootstrap.maximizeWindow) {
+				  embeddedservice_bootstrap.maximizeWindow();
 				}
 			  } catch (err) {
-				console.log("Erro ao inserir mensagem:", err);
+				console.log("Erro ao maximizar:", err);
 			  }
 			  
-			  // Aguarda mais 3 segundos e fecha o chat
+			  // Aguarda 1 segundo para o chat abrir e então fecha
 			  setTimeout(() => {
 				console.log("Fechando chat...");
 				try {
 				  if (embeddedservice_bootstrap && embeddedservice_bootstrap.minimizeWindow) {
 					embeddedservice_bootstrap.minimizeWindow();
 					console.log("Chat minimizado com sucesso");
+					
+					// Reseta a flag após fechar
+					setTimeout(() => {
+					  conversationEnded = false;
+					  console.log("Sistema pronto para nova conversa");
+					}, 1000);
 				  }
 				} catch (err) {
 				  console.error("Erro ao minimizar chat:", err);
 				}
-			  }, 3000);
+			  }, 4000); // 4 segundos para ler a mensagem
 			}, 3000);
 		  }
 
