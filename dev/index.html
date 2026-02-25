@@ -92,38 +92,15 @@
 				}
 			);
 		  } else {
-			if (language == "es") {
-				embeddedservice_bootstrap.init(
-					'00DbY00000FgXq9',
-					'Sofia_Public_Portal_ES',
-					'https://visa-gateway--dev2025.sandbox.my.site.com/ESWSofiaPublicPortalES1762885700907',
-					{
-						scrt2URL: 'https://visa-gateway--dev2025.sandbox.my.salesforce-scrt.com'
-					}
-				);
-			}
-			//pt_BR
-			else if (language == "pt_BR") {
-				embeddedservice_bootstrap.init(
-					'00DbY00000FgXq9',
-					'Sofia_Public_Portal_PT',
-					'https://visa-gateway--dev2025.sandbox.my.site.com/ESWSofiaPublicPortalPT1762885809583',
-					{
-						scrt2URL: 'https://visa-gateway--dev2025.sandbox.my.salesforce-scrt.com'
-					}
-				);
-			}
-			//en_US
-			else {
-				embeddedservice_bootstrap.init(
-					'00DbY00000FgXq9',
-					'Sofia_Public_Portal',
-					'https://visa-gateway--dev2025.sandbox.my.site.com/ESWSofia1746619645236',
-					{
-						scrt2URL: 'https://visa-gateway--dev2025.sandbox.my.salesforce-scrt.com'
-					}
-				);
-			}
+			//Public area
+			embeddedservice_bootstrap.init(
+				'00DbY00000FgXq9',
+				'Sofia_Public_Portal',
+				'https://visa-gateway--dev2025.sandbox.my.site.com/ESWSofia1746619645236',
+				{
+					scrt2URL: 'https://visa-gateway--dev2025.sandbox.my.salesforce-scrt.com'
+				}
+			);
 		  }
 		} catch (err) {
 		  console.error("Error loading Embedded Messaging: ", err);
@@ -140,12 +117,6 @@
 		if (isPrivate) {
 		  scriptSrc =
 			"https://visa-gateway--dev2025.sandbox.my.site.com/ESWSofiaPrivatePortal1762885941878/assets/js/bootstrap.min.js";
-		} else if (language == "es") {
-		  scriptSrc = 
-		"https://visa-gateway--dev2025.sandbox.my.site.com/ESWSofiaPublicPortalES1762885700907/assets/js/bootstrap.min.js";
-		} else if (language == "pt_BR") {
-		  scriptSrc =
-			"https://visa-gateway--dev2025.sandbox.my.site.com/ESWSofiaPublicPortalPT1762885809583/assets/js/bootstrap.min.js";
 		}
 
 		var s = document.createElement("script");
