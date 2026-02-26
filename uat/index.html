@@ -92,42 +92,15 @@
               }
             );
           } else {
-            //es
-            if (language == "es") {
-              embeddedservice_bootstrap.init(
-                "00D9V00000N0u8F",
-                "Sofia_Public_Portal_ES",
-                "https://visa-gateway--uat.sandbox.my.site.com/ESWSofiaPublicPortalES1763424858243",
-                {
-                  scrt2URL:
-                    "https://visa-gateway--uat.sandbox.my.salesforce-scrt.com",
-                }
-              );
-            }
-            //pt_BR
-            else if (language == "pt_BR") {
-              embeddedservice_bootstrap.init(
-                "00D9V00000N0u8F",
-                "Sofia_Public_Portal_PT",
-                "https://visa-gateway--uat.sandbox.my.site.com/ESWSofiaPublicPortalPT1763425294952",
-                {
-                  scrt2URL:
-                    "https://visa-gateway--uat.sandbox.my.salesforce-scrt.com",
-                }
-              );
-            }
-            //en_US
-            else {
-              embeddedservice_bootstrap.init(
-                "00D9V00000N0u8F",
-                "Sofia_Public_Portal",
-                "https://visa-gateway--uat.sandbox.my.site.com/ESWSofia1746619645236",
-                {
-                  scrt2URL:
-                    "https://visa-gateway--uat.sandbox.my.salesforce-scrt.com",
-                }
-              );
-            }
+            embeddedservice_bootstrap.init(
+              "00D9V00000N0u8F",
+              "Sofia_Public_Portal",
+              "https://visa-gateway--uat.sandbox.my.site.com/ESWSofia1746619645236",
+              {
+                scrt2URL:
+                  "https://visa-gateway--uat.sandbox.my.salesforce-scrt.com",
+              }
+            );
           }
         } catch (err) {
           console.error("Error loading Embedded Messaging: ", err);
@@ -143,12 +116,6 @@
         if (isPrivate) {
           scriptSrc =
             "https://visa-gateway--uat.sandbox.my.site.com/ESWSofiaPrivatePortal1763426141089/assets/js/bootstrap.min.js";
-        } else if (language == "es") {
-          scriptSrc =
-            "https://visa-gateway--uat.sandbox.my.site.com/ESWSofiaPublicPortalES1763424858243/assets/js/bootstrap.min.js";
-        } else if (language == "pt_BR") {
-          scriptSrc =
-            "https://visa-gateway--uat.sandbox.my.site.com/ESWSofiaPublicPortalPT1763425294952/assets/js/bootstrap.min.js";
         }
 
         var s = document.createElement("script");
