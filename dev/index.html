@@ -5,30 +5,21 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 	<title>Sofia V2 - DEV</title>
 	<script type="text/javascript">
-	  // ── Fix: injeta allow="geolocation" em iframes ANTES de serem inseridos no DOM ──
+	  // ── Fix: injeta allow="geolocation" apenas nos iframes do ESW (Salesforce) ──
 	  (function() {
-	    var _appendChild = Element.prototype.appendChild;
-	    Element.prototype.appendChild = function(child) {
-	      if (child && child.tagName === 'IFRAME') {
+	    var ESW_HOST = 'visa-gateway--dev2025.sandbox.my.site.com';
+	    function injectGeolocation(child) {
+	      if (child && child.tagName === 'IFRAME' && (child.src || '').indexOf(ESW_HOST) !== -1) {
 	        var current = child.getAttribute('allow') || '';
-	        if (!current.includes('geolocation')) {
+	        if (current.indexOf('geolocation') === -1) {
 	          child.setAttribute('allow', current ? current + '; geolocation' : 'geolocation');
-	          console.log('[ESW] geolocation injetado (appendChild):', child.src || child.className);
 	        }
 	      }
-	      return _appendChild.call(this, child);
-	    };
-	    var _insertBefore = Element.prototype.insertBefore;
-	    Element.prototype.insertBefore = function(child, ref) {
-	      if (child && child.tagName === 'IFRAME') {
-	        var current = child.getAttribute('allow') || '';
-	        if (!current.includes('geolocation')) {
-	          child.setAttribute('allow', current ? current + '; geolocation' : 'geolocation');
-	          console.log('[ESW] geolocation injetado (insertBefore):', child.src || child.className);
-	        }
-	      }
-	      return _insertBefore.call(this, child, ref);
-	    };
+	    }
+	    var _ap = Element.prototype.appendChild;
+	    Element.prototype.appendChild = function(c) { injectGeolocation(c); return _ap.call(this, c); };
+	    var _ib = Element.prototype.insertBefore;
+	    Element.prototype.insertBefore = function(c, r) { injectGeolocation(c); return _ib.call(this, c, r); };
 	  })();
 	  // ─────────────────────────────────────────────────────────────────────────────
 
