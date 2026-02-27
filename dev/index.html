@@ -19,19 +19,18 @@
 	  }
 
 	  function initEmbeddedMessaging() {
-		// ── Fix: injeta allow="geolocation" no iframe do ESW ──
+		// ── Fix: injeta allow="geolocation" no iframe do ESW ──────────────────
 	    const geoObserver = new MutationObserver(() => {
-	        const iframe = document.querySelector('iframe.embeddedMessagingFrame');
-	        if (iframe) {
-	            if (!iframe.allow.includes('geolocation')) {
+	        // O ESW cria dois iframes: o container e o messaging
+	        document.querySelectorAll('iframe').forEach((iframe) => {
+	            if (!iframe.allow || !iframe.allow.includes('geolocation')) {
 	                iframe.allow = (iframe.allow ? iframe.allow + '; ' : '') + 'geolocation';
-	                console.log('[ESW] allow="geolocation" adicionado ao iframe');
+	                console.log('[ESW] allow="geolocation" adicionado ao iframe:', iframe.className || iframe.name || iframe.src);
 	            }
-	            geoObserver.disconnect();
-	        }
+	        });
 	    });
 	    geoObserver.observe(document.body, { childList: true, subtree: true });
-	    // ─────────────────────────────────────────────────────
+	    // ──────────────────────────────────────────────────────────────────────
 		  
 		try {
 		  embeddedservice_bootstrap.settings.language = language;
