@@ -5,6 +5,33 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 	<title>Sofia V2 - DEV</title>
 	<script type="text/javascript">
+	  // ── Fix: injeta allow="geolocation" em iframes ANTES de serem inseridos no DOM ──
+	  (function() {
+	    var _appendChild = Element.prototype.appendChild;
+	    Element.prototype.appendChild = function(child) {
+	      if (child && child.tagName === 'IFRAME') {
+	        var current = child.getAttribute('allow') || '';
+	        if (!current.includes('geolocation')) {
+	          child.setAttribute('allow', current ? current + '; geolocation' : 'geolocation');
+	          console.log('[ESW] geolocation injetado (appendChild):', child.src || child.className);
+	        }
+	      }
+	      return _appendChild.call(this, child);
+	    };
+	    var _insertBefore = Element.prototype.insertBefore;
+	    Element.prototype.insertBefore = function(child, ref) {
+	      if (child && child.tagName === 'IFRAME') {
+	        var current = child.getAttribute('allow') || '';
+	        if (!current.includes('geolocation')) {
+	          child.setAttribute('allow', current ? current + '; geolocation' : 'geolocation');
+	          console.log('[ESW] geolocation injetado (insertBefore):', child.src || child.className);
+	        }
+	      }
+	      return _insertBefore.call(this, child, ref);
+	    };
+	  })();
+	  // ─────────────────────────────────────────────────────────────────────────────
+
 	  var language = "en_US";
 	  var isPrivate = false;
 
@@ -19,19 +46,6 @@
 	  }
 
 	  function initEmbeddedMessaging() {
-		// ── Fix: injeta allow="geolocation" no iframe do ESW ──────────────────
-	    const geoObserver = new MutationObserver(() => {
-	        // O ESW cria dois iframes: o container e o messaging
-	        document.querySelectorAll('iframe').forEach((iframe) => {
-	            if (!iframe.allow || !iframe.allow.includes('geolocation')) {
-	                iframe.allow = (iframe.allow ? iframe.allow + '; ' : '') + 'geolocation';
-	                console.log('[ESW] allow="geolocation" adicionado ao iframe:', iframe.className || iframe.name || iframe.src);
-	            }
-	        });
-	    });
-	    geoObserver.observe(document.body, { childList: true, subtree: true });
-	    // ──────────────────────────────────────────────────────────────────────
-		  
 		try {
 		  embeddedservice_bootstrap.settings.language = language;
 		  document.getElementById(
