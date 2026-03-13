@@ -92,42 +92,15 @@
       				}
       			);
           } else {
-            //es
-            if (language == "es") {
-              embeddedservice_bootstrap.init(
-        				'00Db0000000d9Sx',
-        				'Sofia_Public_Portal_ES',
-        				'https://visa-gateway.my.site.com/ESWSofiaPublicPortalES1764773945069',
-        				{
-        					scrt2URL: 
-                    'https://visa-gateway.my.salesforce-scrt.com'
-        				}
-        			);
-            }
-            //pt_BR
-            else if (language == "pt_BR") {
-              embeddedservice_bootstrap.init(
-        				'00Db0000000d9Sx',
-        				'Sofia_Public_Portal_PT',
-        				'https://visa-gateway.my.site.com/ESWSofiaPublicPortalPT1764780853602',
-        				{
-        					scrt2URL: 
-                    'https://visa-gateway.my.salesforce-scrt.com'
-        				}
-        			);
-            }
-            //en_US
-            else {
-              embeddedservice_bootstrap.init(
-        				'00Db0000000d9Sx',
-        				'Sofia_Portal',
-        				'https://visa-gateway.my.site.com/ESWSofia1746619645236',
-        				{
-        					scrt2URL: 
-                    'https://visa-gateway.my.salesforce-scrt.com'
-        				}
-        			);
-            }
+            embeddedservice_bootstrap.init(
+              '00Db0000000d9Sx',
+              'Sofia_Portal',
+              'https://visa-gateway.my.site.com/ESWSofia1746619645236',
+              {
+                scrt2URL: 
+                  'https://visa-gateway.my.salesforce-scrt.com'
+              }
+            );
           }
         } catch (err) {
           console.error("Error loading Embedded Messaging: ", err);
@@ -143,12 +116,6 @@
         if (isPrivate) {
           scriptSrc =
             "https://visa-gateway.my.site.com/ESWSofiaPrivatePortal1764771656737/assets/js/bootstrap.min.js";
-        } else if (language == "es") {
-          scriptSrc =
-            "https://visa-gateway.my.site.com/ESWSofiaPublicPortalES1764773945069/assets/js/bootstrap.min.js";
-        } else if (language == "pt_BR") {
-          scriptSrc =
-            "https://visa-gateway.my.site.com/ESWSofiaPublicPortalPT1764780853602/assets/js/bootstrap.min.js";
         }
 
         var s = document.createElement("script");
