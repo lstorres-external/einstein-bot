@@ -6,7 +6,7 @@
 	<title>Sofia V2 - DEV</title>
 	<script type="text/javascript">
 	  // ── Fix: injeta allow="geolocation" apenas nos iframes do ESW (Salesforce) ──
-	  (function() {
+	  /*(function() {
 	    var ESW_HOST = 'visa-gateway--dev2025.sandbox.my.site.com';
 	    function injectGeolocation(child) {
 	      if (child && child.tagName === 'IFRAME' && (child.src || '').indexOf(ESW_HOST) !== -1) {
@@ -20,7 +20,7 @@
 	    Element.prototype.appendChild = function(c) { injectGeolocation(c); return _ap.call(this, c); };
 	    var _ib = Element.prototype.insertBefore;
 	    Element.prototype.insertBefore = function(c, r) { injectGeolocation(c); return _ib.call(this, c, r); };
-	  })();
+	  })();*/
 	  // ─────────────────────────────────────────────────────────────────────────────
 
 	  var language = "en_US";
